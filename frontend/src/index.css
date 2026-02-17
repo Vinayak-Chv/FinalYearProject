@@ -2,7 +2,26 @@
 @import "tailwindcss";
 
 body {
-  @apply bg-white;
+  @apply bg-background;
+}
+
+@layer components {
+  .navLinks {
+    @apply relative text-white no-underline;
+  }
+
+  .navLinks::after {
+    content: " ";
+    @apply absolute left-0 -bottom-1.5 h-0.5 w-0 bg-accent-light transition-all duration-300;
+  }
+
+  .navLinks:hover::after {
+    @apply w-full;
+  }
+
+  .navLinks.active::after {
+    @apply w-full;
+  }
 }
 
 @theme {

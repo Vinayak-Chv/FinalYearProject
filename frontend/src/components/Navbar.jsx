@@ -1,75 +1,46 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import Logo from "../assets/Logo.png";
 
 const Navbar = () => {
   return (
     <div>
       {/* Left Side */}
-      <header className="bg-white shadow-md sticky top-0 z-50 w-full">
+      <header className="bg-primary shadow-md sticky top-0 z-50 w-full">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-primary rounded-full"></div>{" "}
-              <span className="text-xl font-bold text-primary cursor-pointer">
-                Thread & Trend
+              <img src={Logo} className="w-8 h-8 rounded-full"></img>
+              <span className="text-xl font-bold text-white cursor-pointer">
+                <NavLink to="/">Thread & Trend</NavLink>
               </span>
             </div>
 
-            {/* 2️⃣ NAVIGATION */}
+            {/* NAVIGATION */}
             <nav className="hidden md:flex gap-6">
-              <a
-                href="/"
-                className="text-gray-600 hover:text-primary transition"
-              >
+              <NavLink to="/" className="navLinks">
                 Home
-              </a>
-              <a
-                href="/collection"
-                className="text-gray-600 hover:text-primary transition"
-              >
+              </NavLink>
+              <NavLink to="/collection" className="navLinks">
                 Collection
-              </a>
-              <a
-                href="/about"
-                className="text-gray-600 hover:text-primary transition"
-              >
+              </NavLink>
+              <NavLink to="/about" className="navLinks">
                 About
-              </a>
-              <a
-                href="/contact"
-                className="text-gray-600 hover:text-primary transition"
-              >
+              </NavLink>
+              <NavLink to="/contact" className="navLinks">
                 Contact
-              </a>
+              </NavLink>
             </nav>
 
-            {/* 3️⃣ AUTH BUTTONS */}
+            {/* AUTH BUTTONS */}
             <div className="flex gap-3">
-              <button className="px-4 py-2 text-primary border border-primary rounded-lg hover:bg-primary hover:text-white transition">
-                Login
+              <button className="px-4 py-2 text-white border-2 border-white/30 rounded-lg hover:bg-white font-semibold hover:text-primary transition-all hover:scale-105">
+                <NavLink to="/login">Login</NavLink>
               </button>
-              <button className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition">
-                Register
+              <button className="px-4 py-2 bg-accent text-primary-dark rounded-lg hover:bg-accent font-semibold hover:text-black transition-all hover:scale-105">
+                <NavLink to="/register">Register</NavLink>
               </button>
             </div>
-
-            {/* Mobile menu button (optional) */}
-            <button className="md:hidden text-gray-600">
-              <svg
-                className="w-6 h-6"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M4 6h16M4 12h16M4 18h16"
-                />
-              </svg>
-            </button>
           </div>
         </div>
       </header>
