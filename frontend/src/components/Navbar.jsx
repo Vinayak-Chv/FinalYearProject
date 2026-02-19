@@ -8,7 +8,7 @@ const Navbar = () => {
       {/* Left Side */}
       <header className="bg-primary shadow-md sticky top-0 z-50 w-full">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
+          <div className="flex justify-between items-center h-18">
             <div className="flex items-center gap-2">
               <img src={Logo} className="w-8 h-8 rounded-full"></img>
               <span className="text-xl font-bold text-white cursor-pointer">
