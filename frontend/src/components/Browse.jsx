@@ -7,7 +7,7 @@ const Browse = () => {
 
     return (
         <div className='w-full h-auto flex justify-center items-center flex-col gap-2'>
-            <h1 className='font-bold text-text-primary-primary text-4xl'>What are you looking for?</h1>
+            <h1 className='font-bold text-text-primary-primary text-4xl mb-2'>What are you looking for?</h1>
 
             <div className='flex justify-between items-center gap-6'>
                 <button className='btn bg-linear-to-br from-secondary to-secondary-dark' onClick={() => navigate("/collection")}>READY-TO WEAR (Designs) <FaArrowRightLong className='text-3xl' /></button>

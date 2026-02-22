@@ -24,7 +24,7 @@ const FeaturedProducts = () => {
 
     return (
         <div className='w-full h-auto flex justify-center items-center flex-col gap-2'>
-            <h1 className='font-bold text-text-primary text-4xl'>Designs for Every Gender and Age</h1>
+            <h1 className='font-bold text-text-primary text-4xl mb-2'>Designs for Every Gender and Age</h1>
             <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6'>
                 {featuredProducts.map(product => (
                     <ProductCard key={product._id} product={product} />
