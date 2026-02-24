@@ -23,7 +23,7 @@ const FilterSidebar = ({ filters, setFilters }) => {
     const clearFilters = () => {
         setFilters({
             gender: "",
-            category: []
+            category: ""
         });
     };
 

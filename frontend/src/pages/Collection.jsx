@@ -17,26 +17,49 @@ const Collection = () => {
 
   const [filters, setFilters] = useState({
     gender: "",
-    category: []
+    category: ""
   })
 
   const [sortBy, setSortBy] = useState('default')
 
-  // 🔒 Hooks MUST run before any return
   const filteredProducts = products.filter(product => {
     const productGender = product?.gender?.toLowerCase() || ''
-    const productCategory = product?.category?.toLowerCase() || ''
 
+    const productCategories = product?.category
+      ? Array.isArray(product.category)
+        ? product.category
+        : product.category.split(/[,|]/)
+      : []
+
+    const normalizedCategories = productCategories
+      .map(c => c.toLowerCase().trim())
+
+    // Gender filter
     if (filters.gender && filters.gender !== productGender) {
       return false
     }
 
-    if (
-      filters.category.length > 0 &&
-      !filters.category.some(c => productCategory.includes(c))
-    ) {
-      return false
+    // Category filter
+    if (filters.category.length > 0) {
+      const selectedCategories = filters.category.map(c => c.toLowerCase())
+
+      const hasBridal = selectedCategories.includes('bridal')
+      const hasEthnic = selectedCategories.includes('ethnic')
+
+      // If both bridal + ethnic are selected → show fusion only
+      if (hasBridal && hasEthnic) {
+        if (!normalizedCategories.includes('fusion')) {
+          return false
+        }
+      }
+      // If only one category selected → normal behavior
+      else {
+        if (!selectedCategories.some(selected => normalizedCategories.includes(selected))) {
+          return false
+        }
+      }
     }
+
 
     return true
   })
@@ -52,7 +75,6 @@ const Collection = () => {
     return 0
   })
 
-  // ✅ Safe early return AFTER hooks
   if (loading) {
     return <div className='text-center py-2'>Loading...</div>
   }
