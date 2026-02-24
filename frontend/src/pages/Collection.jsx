@@ -22,7 +22,6 @@ const Collection = () => {
 
   const [sortBy, setSortBy] = useState('default')
 
-  // Hooks MUST run before any return
   const filteredProducts = products.filter(product => {
     const productGender = product?.gender?.toLowerCase() || ''
 
@@ -111,4 +110,3 @@ const Collection = () => {
 }
 
 export default Collection
-
