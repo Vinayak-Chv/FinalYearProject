@@ -44,7 +44,11 @@ const productSchema = mongoose.Schema({
     required: true,
   },
   ageRange: {
-    type: [Number],
+    type: [String],
+    required: true,
+  },
+  sizes: {
+    type: [String],
     required: true,
   },
 });
