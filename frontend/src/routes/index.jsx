@@ -30,7 +30,7 @@ const Index = () => {
             <Route path="/collection" element={<Collection />} />
             <Route path="/tailors" element={<TailorList />} />
             <Route path="/tailor/:id" element={<TailorDetail />} />
-            <Route path="/product/:id" element={<ProductDetail />} />
+            <Route path="/collection/product/:id" element={<ProductDetail />} />
             <Route path="/about" element={<About />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/login" element={<Login />} />
