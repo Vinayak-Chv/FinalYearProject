@@ -9,6 +9,10 @@ body {
   @apply relative flex flex-col items-center justify-center gap-2 cursor-pointer w-74 h-44 font-bold text-2xl text-white bg-linear-to-br rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 overflow-hidden;
 }
 
+.aboutStats {
+  @apply group-hover:bg-linear-to-r group-hover:from-pink-500 group-hover:to-purple-600 group-hover:bg-clip-text group-hover:text-transparent transition-all duration-300;
+}
+
 @layer components {
   .navLinks {
     @apply relative text-white no-underline;
