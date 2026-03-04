@@ -16,12 +16,6 @@ const ProductDetail = () => {
 
   const product = products.find(p => p._id === id)
 
-  console.log('FULL PRODUCT 👉', product)
-  console.log('ageRange 👉', product.ageRange)
-  console.log('type 👉', typeof product.ageRange)
-  console.log('isArray 👉', Array.isArray(product.ageRange))
-
-
   if (!product) {
     return <div className='text-center py-12'>Product not found</div>
   }
