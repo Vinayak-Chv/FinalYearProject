@@ -3,6 +3,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import connectDB from "./Connection/connectDB.js";
 import productRoutes from "./routes/productRoutes.js";
+import contactRoutes from "./routes/contactRoutes.js";
 
 // Configuration of environment file
 dotenv.config();
@@ -12,8 +13,10 @@ const port = process.env.PORT || 3000;
 app.use(express.json());
 app.use(cors());
 
+// Routes
 app.use("/api/products", productRoutes);
 app.use("/api/products/:id", productRoutes);
+app.use("/api/contact", contactRoutes);
 
 connectDB()
   .then(() => {
