@@ -22,6 +22,7 @@ const commonFields = {
       "string.pattern.base": "Phone number must be 10 digits",
       "any.required": "Phone number is required",
     }),
+  avatar: Joi.string().uri().optional(),
 };
 
 // Customer registration
@@ -59,6 +60,13 @@ export const registerTailorSchema = Joi.object({
     )
     .optional(),
 
+  address: Joi.object({
+    street: Joi.string().required(),
+    city: Joi.string().required(),
+    state: Joi.string().required(),
+    pincode: Joi.number().integer().min(100000).max(999999).required(),
+  }),
+
   socialLinks: Joi.object({
     instagram: Joi.string().uri().optional(),
     facebook: Joi.string().uri().optional(),
@@ -91,6 +99,13 @@ export const registerDesignerSchema = Joi.object({
       }),
     )
     .optional(),
+
+  address: Joi.object({
+    street: Joi.string().required(),
+    city: Joi.string().required(),
+    state: Joi.string().required(),
+    pincode: Joi.number().integer().min(100000).max(999999).required(),
+  }),
 
   socialLinks: Joi.object({
     instagram: Joi.string().uri().optional(),

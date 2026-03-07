@@ -28,7 +28,7 @@ export const registerCustomer = async (req, res) => {
   }
 
   try {
-    const { name, email, password, phone, address } = req.body;
+    const { name, email, password, phone, address, avatar } = req.body;
 
     const userExist = await User.findOne({ email });
     if (userExist) {
@@ -45,6 +45,7 @@ export const registerCustomer = async (req, res) => {
       email,
       password: hashpassword,
       phone,
+      avatar: avatar || "",
       role: "customer",
       customerProfile: { addresses: address ? [address] : [] },
     });
@@ -59,6 +60,7 @@ export const registerCustomer = async (req, res) => {
         name: user.name,
         email: user.email,
         phone: user.phone,
+        avatar: user.avatar,
         role: user.role,
         token,
       },
@@ -87,10 +89,12 @@ export const registerTailor = async (req, res) => {
       email,
       password,
       phone,
+      avatar,
       businessName,
       specialization,
       experience,
       serviceAreas,
+      address,
       portfolio,
       socialLinks,
       bio,
@@ -111,12 +115,14 @@ export const registerTailor = async (req, res) => {
       email,
       password: hashpassword,
       phone,
+      avatar: avatar || "",
       role: "tailor",
       tailorProfile: {
         businessName,
         specialization,
         experience,
         serviceAreas,
+        address: address || {},
         portfolio: portfolio || [],
         socialLinks: socialLinks || {},
         bio: bio || "",
@@ -134,6 +140,7 @@ export const registerTailor = async (req, res) => {
         name: user.name,
         email: user.email,
         phone: user.phone,
+        avatar: user.avatar,
         role: user.role,
         token,
       },
@@ -162,8 +169,10 @@ export const registerDesigner = async (req, res) => {
       email,
       password,
       phone,
+      avatar,
       brandName,
       specialization,
+      address,
       portfolio,
       socialLinks,
       bio,
@@ -186,10 +195,12 @@ export const registerDesigner = async (req, res) => {
       email,
       password: hashpassword,
       phone,
+      avatar: avatar || "",
       role: "designer",
       designerProfile: {
         brandName,
         specialization,
+        address: address || {},
         portfolio: portfolio || [],
         socialLinks: socialLinks || {},
         bio: bio || "",
@@ -209,6 +220,7 @@ export const registerDesigner = async (req, res) => {
         name: user.name,
         email: user.email,
         phone: user.phone,
+        avatar: user.avatar,
         role: user.role,
         token,
       },
@@ -255,6 +267,7 @@ export const loginUser = async (req, res) => {
         name: user.name,
         email: user.email,
         phone: user.phone,
+        avatar: user.avatar,
         role: user.role,
         token,
       },

@@ -22,6 +22,10 @@ const userSchema = mongoose.Schema({
     type: String,
     required: true,
   },
+  avatar: {
+    type: String,
+    default: "",
+  },
   role: {
     type: String,
     enum: ["customer", "tailor", "designer", "admin"],
@@ -80,6 +84,15 @@ const userSchema = mongoose.Schema({
     },
     bio: String,
     verificationStatus: { type: String, default: "pending" },
+    address: [
+      {
+        street: String,
+        city: String,
+        state: String,
+        pincode: { type: Number, required: true },
+        isdefault: { type: Boolean, default: false },
+      },
+    ],
   },
 
   // Designer-specific
@@ -109,6 +122,15 @@ const userSchema = mongoose.Schema({
     education: String,
     awards: [String],
     verificationStatus: { type: String, default: "pending" },
+    address: [
+      {
+        street: String,
+        city: String,
+        state: String,
+        pincode: { type: Number, required: true },
+        isdefault: { type: Boolean, default: false },
+      },
+    ],
   },
 });
 
