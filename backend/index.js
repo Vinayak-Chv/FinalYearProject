@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import connectDB from "./Connection/connectDB.js";
 import productRoutes from "./routes/productRoutes.js";
 import contactRoutes from "./routes/contactRoutes.js";
+import authRoutes from "./routes/authRoutes.js";
 
 // Configuration of environment file
 dotenv.config();
@@ -17,6 +18,7 @@ app.use(cors());
 app.use("/api/products", productRoutes);
 app.use("/api/products/:id", productRoutes);
 app.use("/api/contact", contactRoutes);
+app.use("/api/auth", authRoutes);
 
 connectDB()
   .then(() => {
