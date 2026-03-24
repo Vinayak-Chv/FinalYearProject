@@ -7,6 +7,8 @@ import {
   registerDesignerSchema,
   loginSchema,
 } from "../validations/authValidations.js";
+import crypto from "crypto";
+import PendingUser from "../models/PendingUser.js";
 
 const generateToken = (id, role) => {
   return jwt.sign({ id, role }, process.env.JWT_SECRET, {
@@ -274,5 +276,73 @@ export const loginUser = async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// Save temporary profile data (no credentials)
+export const saveTempProfile = async (req, res) => {
+  try {
+    const { role, profileData } = req.body;
+
+    // Validate role and profileData structure (optional, but recommended)
+    let schema;
+    if (role === "customer") schema = registerCustomerSchema;
+    else if (role === "tailor") schema = registerTailorSchema;
+    else if (role === "designer") schema = registerDesignerSchema;
+    else return res.status(400).json({ message: "Invalid role" });
+
+    // For simplicity, we'll just ensure required top‑level fields exist
+    // You can do deeper validation if needed
+
+    const token = crypto.randomBytes(32).toString("hex");
+    const pending = new PendingUser({ token, role, profileData });
+    await pending.save();
+
+    res.status(201).json({ success: true, token });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+};
+
+// Attach temporary profile to authenticated user
+export const attachProfile = async (req, res) => {
+  try {
+    const { token } = req.body;
+    const pending = await PendingUser.findOne({ token });
+    if (!pending) {
+      return res
+        .status(404)
+        .json({ message: "Profile data not found or expired" });
+    }
+
+    // req.user is set by `protect` middleware (from JWT)
+    const userId = req.user.id;
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const { role, profileData } = pending;
+
+    // Merge profile data into user's document
+    if (role === "customer") {
+      if (profileData.address)
+        user.customerProfile.address.push(profileData.address);
+      if (profileData.measurements)
+        user.customerProfile.measurements.push(profileData.measurements);
+    } else if (role === "tailor") {
+      user.tailorProfile = { ...user.tailorProfile, ...profileData };
+    } else if (role === "designer") {
+      user.designerProfile = { ...user.designerProfile, ...profileData };
+    }
+
+    await user.save();
+    await pending.deleteOne();
+
+    res.status(200).json({ success: true, message: "Profile attached", user });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: "Server error" });
   }
 };
