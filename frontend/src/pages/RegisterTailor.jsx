@@ -18,6 +18,9 @@ const RegisterTailor = () => {
             phone: "",
             businessName: "",
             specialization: [],
+            workType: [],
+            garmentType: [],
+            targetSegment: [],
             experience: "",
             serviceAreas: [],
             address: { street: "", city: "", state: "", pincode: "" },
@@ -61,21 +64,30 @@ const RegisterTailor = () => {
         formik.setFieldValue(field, arr);
     };
 
-    const nextStep = () => {
+    const nextStep = async () => {
         if (step === 1) {
-            // Validate step 1 fields
-            formik.validateField("name");
-            formik.validateField("phone");
-            formik.validateField("businessName");
-            formik.validateField("specialization");
-            formik.validateField("experience");
-            if (formik.errors.name || formik.errors.phone || formik.errors.businessName || formik.errors.specialization || formik.errors.experience) {
+            // Validate all fields in step 1
+            await Promise.all([
+                formik.validateField("name"),
+                formik.validateField("phone"),
+                formik.validateField("businessName"),
+                formik.validateField("specialization"),
+                formik.validateField("workType"),
+                formik.validateField("garmentType"),
+                formik.validateField("targetSegment"),
+                formik.validateField("experience"),
+            ]);
+            if (
+                formik.errors.name || formik.errors.phone || formik.errors.businessName ||
+                formik.errors.specialization || formik.errors.workType || formik.errors.garmentType ||
+                formik.errors.targetSegment || formik.errors.experience
+            ) {
                 toast.error("Please fill in all required fields correctly.");
                 return;
             }
             setStep(2);
         } else if (step === 2) {
-            formik.validateField("serviceAreas");
+            await formik.validateField("serviceAreas");
             if (formik.errors.serviceAreas) {
                 toast.error("Please select at least one service area.");
                 return;
@@ -155,6 +167,60 @@ const RegisterTailor = () => {
                             {formik.touched.specialization && formik.errors.specialization && (
                                 <p className="text-red-500 text-sm">{formik.errors.specialization}</p>
                             )}
+                        </div>
+
+                        <div>
+                            <label className="block font-medium mb-1">Work Type</label>
+                            <div className="flex flex-wrap gap-4">
+                                {["stitching", "alterations", "custom design", "embroidery", "repair"].map((type) => (
+                                    <label key={type} className="flex items-center gap-1">
+                                        <input
+                                            type="checkbox"
+                                            value={type}
+                                            checked={formik.values.workType.includes(type)}
+                                            onChange={() => handleArrayInput("workType", type)}
+                                            className="rounded"
+                                        />
+                                        {type.charAt(0).toUpperCase() + type.slice(1)}
+                                    </label>
+                                ))}
+                            </div>
+                        </div>
+
+                        <div>
+                            <label className="block font-medium mb-1">Garment Type</label>
+                            <div className="flex flex-wrap gap-4">
+                                {["Bridal Wear", "Ethnic Wear", "Casual Wear", "Kids Wear"].map((type) => (
+                                    <label key={type} className="flex items-center gap-1">
+                                        <input
+                                            type="checkbox"
+                                            value={type}
+                                            checked={formik.values.garmentType.includes(type)}
+                                            onChange={() => handleArrayInput("garmentType", type)}
+                                            className="rounded"
+                                        />
+                                        {type}
+                                    </label>
+                                ))}
+                            </div>
+                        </div>
+
+                        <div>
+                            <label className="block font-medium mb-1">Target Segment</label>
+                            <div className="flex flex-wrap gap-4">
+                                {["Men", "Women", "Boys", "Girls"].map((segment) => (
+                                    <label key={segment} className="flex items-center gap-1">
+                                        <input
+                                            type="checkbox"
+                                            value={segment}
+                                            checked={formik.values.targetSegment.includes(segment)}
+                                            onChange={() => handleArrayInput("targetSegment", segment)}
+                                            className="rounded"
+                                        />
+                                        {segment}
+                                    </label>
+                                ))}
+                            </div>
                         </div>
 
                         <div>

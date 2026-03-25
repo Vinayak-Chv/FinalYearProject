@@ -42,7 +42,9 @@ export const registerTailorSchema = Joi.object({
   ...commonFields,
   role: Joi.string().valid("tailor").required(),
   businessName: Joi.string().min(3).max(100).required(),
-  specialization: Joi.array().items(Joi.string()).min(1).required(),
+  workType: Joi.array().items(Joi.string()).required(),
+  garmentType: Joi.array().items(Joi.string()).required(),
+  targetSegment: Joi.array().items(Joi.string()).required(),
   experience: Joi.number().integer().min(0).max(50).required(),
   serviceAreas: Joi.array()
     .items(Joi.number().integer().min(100000).max(999999))
@@ -85,6 +87,7 @@ export const registerDesignerSchema = Joi.object({
   role: Joi.string().valid("designer").required(),
   brandName: Joi.string().min(3).max(100).required(),
   specialization: Joi.array().items(Joi.string()).min(1).required(),
+  targetSegment: Joi.array().items(Joi.string()).required(), // 👈 added
 
   portfolio: Joi.array()
     .items(

@@ -65,7 +65,9 @@ const userSchema = mongoose.Schema({
   // Tailor-specific
   tailorProfile: {
     businessName: String,
-    specialization: [String],
+    workType: [String],
+    garmentType: [String],
+    targetSegment: [String],
     experience: Number,
     serviceAreas: [Number],
     portfolio: [
@@ -99,6 +101,7 @@ const userSchema = mongoose.Schema({
   designerProfile: {
     brandName: String,
     specialization: [String],
+    targetSegment: [String],
     portfolio: [
       {
         type: {

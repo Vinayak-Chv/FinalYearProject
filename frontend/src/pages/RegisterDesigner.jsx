@@ -4,9 +4,10 @@ import { useFormik } from "formik";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { FiUser, FiPhone, FiBriefcase, FiMapPin, FiArrowRight, FiArrowLeft } from "react-icons/fi";
-import { designerRegistrationSchema } from "../validations/authValidations";
+import * as Yup from "yup";
+import { tailorRegistrationSchema } from "../validations/authValidations";
 
-const RegisterDesigner = () => {
+const RegisterTailor = () => {
     const navigate = useNavigate();
     const [step, setStep] = useState(1);
     const [loading, setLoading] = useState(false);
@@ -16,13 +17,16 @@ const RegisterDesigner = () => {
         initialValues: {
             name: "",
             phone: "",
-            brandName: "",
-            specialization: [],
+            businessName: "",
+            workType: [],
+            garmentType: [],
+            targetSegment: [],
+            experience: "",
+            serviceAreas: [],
             address: { street: "", city: "", state: "", pincode: "" },
             bio: "",
-            education: "",
         },
-        validationSchema: designerRegistrationSchema,
+        validationSchema: tailorRegistrationSchema,
         validateOnChange: true,
         validateOnBlur: true,
         onSubmit: async (values) => {
@@ -30,7 +34,7 @@ const RegisterDesigner = () => {
             setLoading(true);
             try {
                 const { data } = await axios.post("http://localhost:3000/api/auth/temp-profile", {
-                    role: "designer",
+                    role: "tailor",
                     profileData: values,
                 });
                 if (data.success) {
@@ -60,17 +64,38 @@ const RegisterDesigner = () => {
         formik.setFieldValue(field, arr);
     };
 
-    const nextStep = () => {
-        if (step === 1) {
-            formik.validateField("name");
-            formik.validateField("phone");
-            formik.validateField("brandName");
-            formik.validateField("specialization");
-            if (formik.errors.name || formik.errors.phone || formik.errors.brandName || formik.errors.specialization) {
-                toast.error("Please fill in all required fields correctly.");
-                return;
+    const validateStep1 = async () => {
+        const values = formik.values;
+        const fieldsToValidate = ["name", "phone", "businessName", "workType", "garmentType", "targetSegment", "experience"];
+
+        for (const field of fieldsToValidate) {
+            try {
+                await Yup.reach(tailorRegistrationSchema, field).validate(values[field]);
+            } catch (err) {
+                toast.error(err.message);
+                return false;
             }
-            setStep(2);
+        }
+        return true;
+    };
+
+    const validateStep2 = async () => {
+        try {
+            await Yup.reach(tailorRegistrationSchema, "serviceAreas").validate(formik.values.serviceAreas);
+            return true;
+        } catch (err) {
+            toast.error(err.message);
+            return false;
+        }
+    };
+
+    const nextStep = async () => {
+        if (step === 1) {
+            const isValid = await validateStep1();
+            if (isValid) setStep(2);
+        } else if (step === 2) {
+            const isValid = await validateStep2();
+            if (isValid) setStep(3);
         }
     };
 
@@ -78,7 +103,7 @@ const RegisterDesigner = () => {
 
     return (
         <div className="max-w-2xl mx-auto p-6">
-            <h1 className="text-2xl font-bold mb-6 text-center">Fashion Designer Registration</h1>
+            <h1 className="text-2xl font-bold mb-6 text-center">Tailor Registration</h1>
             {error && <div className="bg-red-50 text-red-700 p-3 rounded mb-4">{error}</div>}
 
             <form onSubmit={formik.handleSubmit} className="space-y-6">
@@ -89,7 +114,7 @@ const RegisterDesigner = () => {
                             <input
                                 type="text"
                                 name="name"
-                                placeholder="Designer Name"
+                                placeholder="Full Name"
                                 value={formik.values.name}
                                 onChange={formik.handleChange}
                                 onBlur={formik.handleBlur}
@@ -116,42 +141,116 @@ const RegisterDesigner = () => {
                             <FiBriefcase className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral" />
                             <input
                                 type="text"
-                                name="brandName"
-                                placeholder="Brand Name"
-                                value={formik.values.brandName}
+                                name="businessName"
+                                placeholder="Business Name"
+                                value={formik.values.businessName}
                                 onChange={formik.handleChange}
                                 onBlur={formik.handleBlur}
                                 className="w-full pl-10 pr-3 py-2 border rounded focus:border-primary"
                             />
                         </div>
-                        {formik.touched.brandName && formik.errors.brandName && <p className="text-red-500 text-sm">{formik.errors.brandName}</p>}
+                        {formik.touched.businessName && formik.errors.businessName && <p className="text-red-500 text-sm">{formik.errors.businessName}</p>}
 
+                        {/* Work Type */}
                         <div>
-                            <label className="block font-medium mb-1">Specializations</label>
+                            <label className="block font-medium mb-1">Work Type</label>
                             <div className="flex flex-wrap gap-4">
-                                {["Bridal Wear", "Casual Wear", "Traditional", "Indo-Western", "Kids Wear"].map((spec) => (
-                                    <label key={spec} className="flex items-center gap-1">
+                                {["stitching", "alterations", "custom design", "embroidery", "repair"].map((type) => (
+                                    <label key={type} className="flex items-center gap-1">
                                         <input
                                             type="checkbox"
-                                            value={spec}
-                                            checked={formik.values.specialization.includes(spec)}
-                                            onChange={() => handleArrayInput("specialization", spec)}
+                                            value={type}
+                                            checked={formik.values.workType.includes(type)}
+                                            onChange={() => handleArrayInput("workType", type)}
                                             className="rounded"
                                         />
-                                        {spec}
+                                        {type.charAt(0).toUpperCase() + type.slice(1)}
                                     </label>
                                 ))}
                             </div>
-                            {formik.touched.specialization && formik.errors.specialization && (
-                                <p className="text-red-500 text-sm">{formik.errors.specialization}</p>
-                            )}
+                            {formik.touched.workType && formik.errors.workType && <p className="text-red-500 text-sm">{formik.errors.workType}</p>}
                         </div>
+
+                        {/* Garment Type */}
+                        <div>
+                            <label className="block font-medium mb-1">Garment Type</label>
+                            <div className="flex flex-wrap gap-4">
+                                {["Bridal Wear", "Ethnic Wear", "Casual Wear", "Kids Wear"].map((type) => (
+                                    <label key={type} className="flex items-center gap-1">
+                                        <input
+                                            type="checkbox"
+                                            value={type}
+                                            checked={formik.values.garmentType.includes(type)}
+                                            onChange={() => handleArrayInput("garmentType", type)}
+                                            className="rounded"
+                                        />
+                                        {type}
+                                    </label>
+                                ))}
+                            </div>
+                            {formik.touched.garmentType && formik.errors.garmentType && <p className="text-red-500 text-sm">{formik.errors.garmentType}</p>}
+                        </div>
+
+                        {/* Target Segment */}
+                        <div>
+                            <label className="block font-medium mb-1">Target Segment</label>
+                            <div className="flex flex-wrap gap-4">
+                                {["Men", "Women", "Boys", "Girls"].map((segment) => (
+                                    <label key={segment} className="flex items-center gap-1">
+                                        <input
+                                            type="checkbox"
+                                            value={segment}
+                                            checked={formik.values.targetSegment.includes(segment)}
+                                            onChange={() => handleArrayInput("targetSegment", segment)}
+                                            className="rounded"
+                                        />
+                                        {segment}
+                                    </label>
+                                ))}
+                            </div>
+                            {formik.touched.targetSegment && formik.errors.targetSegment && <p className="text-red-500 text-sm">{formik.errors.targetSegment}</p>}
+                        </div>
+
+                        {/* Experience */}
+                        <div>
+                            <input
+                                type="number"
+                                name="experience"
+                                placeholder="Years of Experience"
+                                value={formik.values.experience}
+                                onChange={formik.handleChange}
+                                onBlur={formik.handleBlur}
+                                className="w-full px-3 py-2 border rounded focus:border-primary"
+                            />
+                        </div>
+                        {formik.touched.experience && formik.errors.experience && <p className="text-red-500 text-sm">{formik.errors.experience}</p>}
                     </>
                 )}
 
                 {step === 2 && (
+                    <div>
+                        <label className="block font-medium mb-1">Service Areas (pincodes)</label>
+                        <div className="flex flex-wrap gap-4">
+                            {["560001", "560002", "560003", "560004", "560005"].map((pincode) => (
+                                <label key={pincode} className="flex items-center gap-1">
+                                    <input
+                                        type="checkbox"
+                                        value={pincode}
+                                        checked={formik.values.serviceAreas.includes(pincode)}
+                                        onChange={() => handleArrayInput("serviceAreas", pincode)}
+                                        className="rounded"
+                                    />
+                                    {pincode}
+                                </label>
+                            ))}
+                        </div>
+                        {formik.touched.serviceAreas && formik.errors.serviceAreas && <p className="text-red-500 text-sm">{formik.errors.serviceAreas}</p>}
+                    </div>
+                )}
+
+                {step === 3 && (
                     <div className="space-y-3">
-                        <h3 className="font-semibold">Studio Address</h3>
+                        <h3 className="font-semibold">Shop/Studio Address</h3>
                         <div className="relative">
                             <FiMapPin className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral" />
                             <input
@@ -205,14 +304,6 @@ const RegisterDesigner = () => {
                             rows="3"
                             className="w-full px-3 py-2 border rounded"
                         />
-                        <input
-                            type="text"
-                            name="education"
-                            placeholder="Education (optional)"
-                            value={formik.values.education}
-                            onChange={formik.handleChange}
-                            className="w-full px-3 py-2 border rounded"
-                        />
                     </div>
                 )}
 
@@ -222,7 +313,7 @@ const RegisterDesigner = () => {
                             <FiArrowLeft /> Back
                         </button>
                     )}
-                    {step < 2 ? (
+                    {step < 3 ? (
                         <button type="button" onClick={nextStep} className="ml-auto flex items-center gap-2 bg-primary text-white px-4 py-2 rounded hover:bg-primary-dark">
                             Next <FiArrowRight />
                         </button>
@@ -237,4 +328,4 @@ const RegisterDesigner = () => {
     );
 };
 
-export default RegisterDesigner;
+export default RegisterTailor;

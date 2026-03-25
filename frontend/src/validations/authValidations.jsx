@@ -31,7 +31,9 @@ export const tailorRegistrationSchema = Yup.object({
     name: Yup.string().min(3).required("Name is required"),
     phone: Yup.string().matches(/^[0-9]{10}$/, "Phone must be 10 digits").required("Phone is required"),
     businessName: Yup.string().min(3).required("Business name is required"),
-    specialization: Yup.array().min(1, "At least one specialization is required"),
+    workType: Yup.array().min(1, "At least one work type is required"),
+    garmentType: Yup.array().min(1, "At least one garment type is required"),
+    targetSegment: Yup.array().min(1, "At least one target segment is required"),
     experience: Yup.number().min(0).max(50).required("Experience is required"),
     serviceAreas: Yup.array().min(1, "At least one service area is required"),
     address: Yup.object({
@@ -48,6 +50,7 @@ export const designerRegistrationSchema = Yup.object({
     phone: Yup.string().matches(/^[0-9]{10}$/, "Phone must be 10 digits").required("Phone is required"),
     brandName: Yup.string().min(3).required("Brand name is required"),
     specialization: Yup.array().min(1, "At least one specialization is required"),
+    targetSegment: Yup.array().min(1, "At least one target segment is required"),
     address: Yup.object({
         street: Yup.string().required("Street is required"),
         city: Yup.string().required("City is required"),
