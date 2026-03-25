@@ -3,8 +3,8 @@ import {
   useContext,
   useState,
   useEffect,
-  Children,
 } from "react";
+import axios from "axios";
 
 const AuthContext = createContext();
 
@@ -13,22 +13,49 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Check localStorage or token for existing user's session
+    // Safe localStorage handling
     const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
+
+    if (storedUser && storedUser !== "undefined") {
+      try {
+        setUser(JSON.parse(storedUser));
+      } catch (error) {
+        console.error("Invalid user in localStorage");
+        localStorage.removeItem("user"); // cleanup corrupted data
+      }
     }
+
     setLoading(false);
   }, []);
 
-  const login = (userData) => {
-    setUser(userData);
-    localStorage.setItem("user", JSON.stringify(userData));
+  // Login function
+  const login = async (email, password) => {
+    try {
+      const res = await axios.post(
+        "http://localhost:3000/api/auth/login",
+        { email, password }
+      );
+
+      const userData = res.data.data;
+
+      setUser(userData);
+      localStorage.setItem("user", JSON.stringify(userData));
+      localStorage.setItem("authToken", userData.token);
+
+      return { success: true };
+    } catch (error) {
+      return {
+        success: false,
+        message: error.response?.data?.message || "Login failed",
+      };
+    }
   };
 
+  // Logout function
   const logout = () => {
     setUser(null);
     localStorage.removeItem("user");
+    localStorage.removeItem("authToken");
   };
 
   return (

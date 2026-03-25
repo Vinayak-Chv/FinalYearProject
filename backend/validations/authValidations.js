@@ -35,7 +35,16 @@ export const registerCustomerSchema = Joi.object({
     state: Joi.string().required(),
     pincode: Joi.number().integer().min(100000).max(999999).required(),
   }).optional(),
-});
+
+  measurements: Joi.object({
+    chest: Joi.number(),
+    waist: Joi.number(),
+    hips: Joi.number(),
+    shoulder: Joi.number(),
+    sleeve: Joi.number(),
+    length: Joi.number(),
+  }).optional(),
+}).options({ stripUnknown: true });
 
 // Tailor registration
 export const registerTailorSchema = Joi.object({

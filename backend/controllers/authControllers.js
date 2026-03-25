@@ -28,7 +28,8 @@ export const registerCustomer = async (req, res) => {
   }
 
   try {
-    const { name, email, password, phone, address, avatar } = req.body;
+    const { name, email, password, phone, address, avatar, measurements } =
+      req.body;
 
     const userExist = await User.findOne({ email });
     if (userExist) {
@@ -47,7 +48,13 @@ export const registerCustomer = async (req, res) => {
       phone,
       avatar: avatar || "",
       role: "customer",
-      customerProfile: { address: address ? [address] : [] },
+      customerProfile: {
+        address: address ? [address] : [],
+        measurements:
+          measurements && Object.keys(measurements).length > 0
+            ? [measurements]
+            : [],
+      },
     });
 
     const token = generateToken(user._id, user.role);

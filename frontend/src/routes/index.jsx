@@ -12,10 +12,7 @@ import About from "../pages/About";
 import Contact from "../pages/Contact";
 
 // Auth Pages (without navbar/footer)
-import RoleSelection from "../pages/RoleSelection";
-import RegisterCustomer from "../pages/RegisterCustomer";
-import RegisterTailor from "../pages/RegisterTailor";
-import RegisterDesigner from "../pages/RegisterDesigner";
+import Register from "../pages/Register";
 import Login from "../pages/Login";
 
 const Index = () => {
@@ -34,10 +31,7 @@ const Index = () => {
 
       {/* Auth pages – no navbar/footer */}
       <Route element={<AuthLayout />}>
-        <Route path="/register" element={<RoleSelection />} />
-        <Route path="/register/customer" element={<RegisterCustomer />} />
-        <Route path="/register/tailor" element={<RegisterTailor />} />
-        <Route path="/register/designer" element={<RegisterDesigner />} />
+        <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
       </Route>
     </Routes>
