@@ -37,7 +37,9 @@ const DesignerDetails = ({ formData, updateFormData, onNext, onPrev }) => {
         },
         validationSchema: designerDetailsSchema,
         onSubmit: (values) => {
-            updateFormData(values);
+            // ✅ Remove confirmPassword before saving
+            const { confirmPassword, ...dataToSave } = values;
+            updateFormData(dataToSave);
             toast.success("Designer details saved");
             onNext();
         },
@@ -134,7 +136,7 @@ const DesignerDetails = ({ formData, updateFormData, onNext, onPrev }) => {
                 )}
             </div>
 
-            {/* Portfolio (simple) */}
+            {/* Portfolio */}
             <div>
                 <h3 className="font-semibold mb-2">Portfolio (optional)</h3>
                 <input

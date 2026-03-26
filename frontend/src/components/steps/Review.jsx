@@ -1,5 +1,3 @@
-import toast from "react-hot-toast";
-
 const Review = ({ formData, onSubmit, goToStep }) => {
     const handleSubmit = () => {
         onSubmit();
@@ -18,20 +16,27 @@ const Review = ({ formData, onSubmit, goToStep }) => {
             <h2 className="text-2xl font-bold mb-4 text-center">Review Your Information</h2>
             <div className="bg-gray-50 p-4 rounded-lg space-y-2">
                 {Object.entries(formData).map(([key, val]) => {
+                    // Skip confirmPassword completely
+                    if (key === "confirmPassword") return null;
+
                     if (val && typeof val === "object" && !Array.isArray(val)) {
                         // For nested objects like address, socialLinks, etc.
                         return (
                             <div key={key}>
                                 <h3 className="font-semibold mt-2 capitalize">{key}</h3>
                                 {Object.entries(val).map(([subKey, subVal]) => (
-                                    <div key={subKey} className="ml-4">
+                                    <div key={`${key}-${subKey}`} className="ml-4">
                                         {renderField(subKey, subVal)}
                                     </div>
                                 ))}
                             </div>
                         );
                     } else {
-                        return renderField(key, val);
+                        return (
+                            <div key={key}>
+                                {renderField(key, val)}
+                            </div>
+                        );
                     }
                 })}
             </div>

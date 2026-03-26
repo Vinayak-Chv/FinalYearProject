@@ -20,7 +20,9 @@ const Credentials = ({ formData, updateFormData, onNext }) => {
         },
         validationSchema: credentialsSchema,
         onSubmit: (values) => {
-            updateFormData(values);
+            // Only save email and password to main formData
+            const { email, password } = values;
+            updateFormData({ email, password });
             toast.success("Credentials saved");
             onNext();
         },
@@ -30,6 +32,7 @@ const Credentials = ({ formData, updateFormData, onNext }) => {
         <form onSubmit={formik.handleSubmit} className="space-y-5">
             <h2 className="text-2xl font-bold mb-4 text-center">Account Credentials</h2>
 
+            {/* Email */}
             <div>
                 <div className="relative">
                     <FiMail className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral" />
@@ -48,6 +51,7 @@ const Credentials = ({ formData, updateFormData, onNext }) => {
                 )}
             </div>
 
+            {/* Password */}
             <div>
                 <div className="relative">
                     <FiLock className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral" />
@@ -66,6 +70,7 @@ const Credentials = ({ formData, updateFormData, onNext }) => {
                 )}
             </div>
 
+            {/* Confirm Password */}
             <div>
                 <div className="relative">
                     <FiLock className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral" />

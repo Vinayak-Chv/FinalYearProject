@@ -69,7 +69,6 @@ const userSchema = mongoose.Schema({
     garmentType: [String],
     targetSegment: [String],
     experience: Number,
-    serviceAreas: [Number],
     portfolio: [
       {
         type: { type: String, enum: ["image", "video", "link"] },

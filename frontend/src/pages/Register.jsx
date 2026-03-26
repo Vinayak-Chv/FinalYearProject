@@ -40,8 +40,35 @@ const Register = () => {
 
   const submitRegistration = async () => {
     const endpoint = `http://localhost:3000/api/auth/register/${role}`;
+
+    // Deep copy the formData
+    const cleanedData = JSON.parse(JSON.stringify(formData));
+
+    // Convert address.pincode to number if it exists
+    if (cleanedData.address?.pincode) {
+      cleanedData.address.pincode = Number(cleanedData.address.pincode);
+    }
+
+    // Recursive function to remove empty optional fields
+    const removeEmptyFields = (obj) => {
+      Object.keys(obj).forEach((key) => {
+        if (
+          obj[key] === "" ||
+          obj[key] === null ||
+          (Array.isArray(obj[key]) && obj[key].length === 0) ||
+          (typeof obj[key] === "object" && obj[key] !== null && Object.keys(obj[key]).length === 0)
+        ) {
+          delete obj[key];
+        } else if (typeof obj[key] === "object") {
+          removeEmptyFields(obj[key]);
+        }
+      });
+    };
+
+    removeEmptyFields(cleanedData);
+
     try {
-      const { data } = await axios.post(endpoint, formData);
+      const { data } = await axios.post(endpoint, cleanedData);
 
       if (data.success) {
         localStorage.setItem("token", data.data.token);
@@ -55,7 +82,6 @@ const Register = () => {
       toast.error(err.response?.data?.message || "Server error");
     }
   };
-
 
   const currentStepName = steps[stepIndex];
   const StepComponent = stepComponents[currentStepName];
