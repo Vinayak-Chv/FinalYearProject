@@ -85,9 +85,10 @@ const Register = () => {
 
   const currentStepName = steps[stepIndex];
   const StepComponent = stepComponents[currentStepName];
+  const containerClass = stepIndex === 0 ? "max-w-6xl" : "max-w-3xl";
 
   return (
-    <div className="max-w-2xl mx-auto p-6">
+    <div className={`${containerClass} mx-auto p-6`}>
       <StepComponent
         role={role}
         setRole={setRole}

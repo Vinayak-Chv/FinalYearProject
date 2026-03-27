@@ -31,49 +31,39 @@ const RoleSelection = ({ setRole, onNext }) => {
     };
 
     return (
-        <div className="min-h-screen bg-background flex items-center justify-center py-12">
-            <div className="max-w-6xl mx-auto px-4">
-                <div className="text-center mb-12">
-                    <h1 className="text-4xl font-bold text-text-primary mb-4">
-                        Join as a...
-                    </h1>
-                    <p className="text-text-secondary text-lg">
-                        Choose your role to get started.
-                    </p>
-                </div>
+        <div>
+            <div className="text-center mb-12">
+                <h1 className="text-4xl font-bold text-text-primary mb-4">Join as a...</h1>
+                <p className="text-text-secondary text-lg">Choose your role to get started.</p>
+            </div>
 
-                <div className="grid md:grid-cols-3 gap-8">
-                    {roles.map((role) => (
-                        <button
-                            key={role.id}
-                            onClick={() => handleSelect(role.id)}
-                            className={`${role.bgColor} rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 text-left w-full`}
-                        >
-                            <div className="flex flex-col items-center text-center">
-                                <div className="mb-4">{role.icon}</div>
-                                <h2 className="text-2xl font-bold text-text-primary mb-2">
-                                    {role.title}
-                                </h2>
-                                <p className="text-text-secondary">{role.description}</p>
-                                <div className="mt-6 text-primary font-semibold">
-                                    Register Now →
-                                </div>
-                            </div>
-                        </button>
-                    ))}
-                </div>
+            <div className="grid md:grid-cols-3 gap-8">
+                {roles.map((role) => (
+                    <button
+                        key={role.id}
+                        onClick={() => handleSelect(role.id)}
+                        className={`${role.bgColor} rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 w-full aspect-square flex flex-col items-center justify-center p-4`}
+                    >
+                        <div className="flex flex-col items-center text-center">
+                            <div className="mb-2">{role.icon}</div>
+                            <h2 className="text-xl font-bold text-text-primary mb-1">{role.title}</h2>
+                            <p className="text-text-secondary text-sm">{role.description}</p>
+                            <div className="mt-4 text-primary font-semibold">Register Now →</div>
+                        </div>
+                    </button>
+                ))}
+            </div>
 
-                <div className="text-center mt-12">
-                    <p className="text-text-secondary">
-                        Already have an account?{" "}
-                        <button
-                            onClick={() => window.location.href = "/login"}
-                            className="text-primary hover:text-blue-500 cursor-pointer hover:underline"
-                        >
-                            Log in
-                        </button>
-                    </p>
-                </div>
+            <div className="text-center mt-12">
+                <p className="text-text-secondary">
+                    Already have an account?{" "}
+                    <button
+                        onClick={() => (window.location.href = "/login")}
+                        className="text-primary hover:text-blue-500 cursor-pointer hover:underline"
+                    >
+                        Log in
+                    </button>
+                </p>
             </div>
         </div>
     );
