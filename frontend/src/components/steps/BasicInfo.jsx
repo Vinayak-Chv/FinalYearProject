@@ -1,27 +1,16 @@
 import { useFormik } from "formik";
-import * as Yup from "yup";
 import { FiUser, FiPhone } from "react-icons/fi";
 import toast from "react-hot-toast";
+import { tailorBasicInfoSchema } from "../../validations/tailorValidations";
+import { designerBasicInfoSchema } from "../../validations/designerValidations";
 
 const BasicInfo = ({ role, formData, updateFormData, onNext }) => {
-    // Build the validation schema based on role
-    const getValidationSchema = () => {
-        const base = {
-            name: Yup.string().min(3, "At least 3 characters").required("Name is required"),
-            phone: Yup.string()
-                .matches(/^[0-9]{10}$/, "Phone must be 10 digits")
-                .required("Phone is required"),
-        };
-        if (role === "tailor") {
-            base.businessName = Yup.string().min(3).required("Business name is required");
-            base.experience = Yup.number().min(0).max(50).required("Experience is required");
-            base.bio = Yup.string().optional();
-        } else if (role === "designer") {
-            base.brandName = Yup.string().min(3).required("Brand name is required");
-            base.specialization = Yup.array().min(1, "Select at least one specialization");
-        }
-        return Yup.object(base);
-    };
+    const validationSchema =
+        role === "tailor"
+            ? tailorBasicInfoSchema
+            : role === "designer"
+                ? designerBasicInfoSchema
+                : null;
 
     const formik = useFormik({
         initialValues: {
@@ -37,7 +26,7 @@ const BasicInfo = ({ role, formData, updateFormData, onNext }) => {
                 specialization: formData.specialization || [],
             }),
         },
-        validationSchema: getValidationSchema(),
+        validationSchema,
         onSubmit: (values) => {
             updateFormData(values);
             toast.success("Basic info saved");
@@ -48,7 +37,7 @@ const BasicInfo = ({ role, formData, updateFormData, onNext }) => {
     const handleCheckboxArray = (field, value) => {
         const current = formik.values[field] || [];
         const updated = current.includes(value)
-            ? current.filter(v => v !== value)
+            ? current.filter((v) => v !== value)
             : [...current, value];
         formik.setFieldValue(field, updated);
     };
@@ -91,7 +80,7 @@ const BasicInfo = ({ role, formData, updateFormData, onNext }) => {
                 <p className="text-red-500 text-sm mt-1">{formik.errors.phone}</p>
             )}
 
-            {/* Tailor-specific fields */}
+            {/* Tailor-specific */}
             {role === "tailor" && (
                 <>
                     <input
@@ -131,7 +120,7 @@ const BasicInfo = ({ role, formData, updateFormData, onNext }) => {
                 </>
             )}
 
-            {/* Designer-specific fields */}
+            {/* Designer-specific */}
             {role === "designer" && (
                 <>
                     <input
@@ -150,18 +139,20 @@ const BasicInfo = ({ role, formData, updateFormData, onNext }) => {
                     <div>
                         <label className="block font-medium mb-1">Specializations</label>
                         <div className="flex flex-wrap gap-4">
-                            {["Bridal Wear", "Ethnic Wear", "Indo-Western", "Kids Wear"].map((spec) => (
-                                <label key={spec} className="flex items-center gap-1">
-                                    <input
-                                        type="checkbox"
-                                        value={spec}
-                                        checked={formik.values.specialization?.includes(spec)}
-                                        onChange={() => handleCheckboxArray("specialization", spec)}
-                                        className="rounded"
-                                    />
-                                    {spec}
-                                </label>
-                            ))}
+                            {["Bridal Wear", "Ethnic Wear", "Indo-Western", "Kids Wear"].map(
+                                (spec) => (
+                                    <label key={spec} className="flex items-center gap-1">
+                                        <input
+                                            type="checkbox"
+                                            value={spec}
+                                            checked={formik.values.specialization?.includes(spec)}
+                                            onChange={() => handleCheckboxArray("specialization", spec)}
+                                            className="rounded"
+                                        />
+                                        {spec}
+                                    </label>
+                                )
+                            )}
                         </div>
                         {formik.touched.specialization && formik.errors.specialization && (
                             <p className="text-red-500 text-sm">{formik.errors.specialization}</p>

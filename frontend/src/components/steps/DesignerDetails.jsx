@@ -1,28 +1,7 @@
 import { useFormik } from "formik";
-import * as Yup from "yup";
 import { FiMapPin } from "react-icons/fi";
 import toast from "react-hot-toast";
-
-const designerDetailsSchema = Yup.object({
-    targetSegment: Yup.array().min(1, "Select at least one target segment"),
-    address: Yup.object({
-        street: Yup.string().required(),
-        city: Yup.string().required(),
-        state: Yup.string().required(),
-        pincode: Yup.number().min(100000).max(999999).required(),
-    }),
-    portfolio: Yup.array().optional(),
-    socialLinks: Yup.object({
-        instagram: Yup.string().url().optional(),
-        pinterest: Yup.string().url().optional(),
-        behance: Yup.string().url().optional(),
-        website: Yup.string().url().optional(),
-        linkedin: Yup.string().url().optional(),
-    }).optional(),
-    bio: Yup.string().optional(),
-    education: Yup.string().optional(),
-    awards: Yup.array().optional(),
-});
+import { designerDetailsSchema } from "../../validations/designerValidations";
 
 const DesignerDetails = ({ formData, updateFormData, onNext, onPrev }) => {
     const formik = useFormik({
@@ -44,9 +23,9 @@ const DesignerDetails = ({ formData, updateFormData, onNext, onPrev }) => {
                     {
                         ...values.address,
                         pincode: Number(values.address.pincode),
-                    }
+                    },
                 ],
-                portfolio: values.portfolio?.map(p => ({
+                portfolio: values.portfolio?.map((p) => ({
                     ...p,
                     title: p.title || "",
                     description: p.description || "",
@@ -60,19 +39,19 @@ const DesignerDetails = ({ formData, updateFormData, onNext, onPrev }) => {
             updateFormData(cleanedData);
             toast.success("Designer details saved");
             onNext();
-        }
+        },
     });
 
     const handleCheckboxArray = (field, value) => {
         const current = formik.values[field] || [];
         const updated = current.includes(value)
-            ? current.filter(v => v !== value)
+            ? current.filter((v) => v !== value)
             : [...current, value];
         formik.setFieldValue(field, updated);
     };
 
     const handleAwards = (e) => {
-        const awards = e.target.value.split(",").map(s => s.trim()).filter(Boolean);
+        const awards = e.target.value.split(",").map((s) => s.trim()).filter(Boolean);
         formik.setFieldValue("awards", awards);
     };
 
@@ -173,46 +152,17 @@ const DesignerDetails = ({ formData, updateFormData, onNext, onPrev }) => {
             {/* Social Links */}
             <div>
                 <h3 className="font-semibold mb-2">Social Links (optional)</h3>
-                <input
-                    type="url"
-                    name="socialLinks.instagram"
-                    placeholder="Instagram"
-                    value={formik.values.socialLinks.instagram || ""}
-                    onChange={formik.handleChange}
-                    className="w-full px-3 py-2 border rounded mb-2"
-                />
-                <input
-                    type="url"
-                    name="socialLinks.pinterest"
-                    placeholder="Pinterest"
-                    value={formik.values.socialLinks.pinterest || ""}
-                    onChange={formik.handleChange}
-                    className="w-full px-3 py-2 border rounded mb-2"
-                />
-                <input
-                    type="url"
-                    name="socialLinks.behance"
-                    placeholder="Behance"
-                    value={formik.values.socialLinks.behance || ""}
-                    onChange={formik.handleChange}
-                    className="w-full px-3 py-2 border rounded mb-2"
-                />
-                <input
-                    type="url"
-                    name="socialLinks.website"
-                    placeholder="Website"
-                    value={formik.values.socialLinks.website || ""}
-                    onChange={formik.handleChange}
-                    className="w-full px-3 py-2 border rounded mb-2"
-                />
-                <input
-                    type="url"
-                    name="socialLinks.linkedin"
-                    placeholder="LinkedIn"
-                    value={formik.values.socialLinks.linkedin || ""}
-                    onChange={formik.handleChange}
-                    className="w-full px-3 py-2 border rounded"
-                />
+                {["instagram", "pinterest", "behance", "website", "linkedin"].map((link) => (
+                    <input
+                        key={link}
+                        type="url"
+                        name={`socialLinks.${link}`}
+                        placeholder={link.charAt(0).toUpperCase() + link.slice(1)}
+                        value={formik.values.socialLinks[link] || ""}
+                        onChange={formik.handleChange}
+                        className="w-full px-3 py-2 border rounded mb-2"
+                    />
+                ))}
             </div>
 
             {/* Bio, Education, Awards */}

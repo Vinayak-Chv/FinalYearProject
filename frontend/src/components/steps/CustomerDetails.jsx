@@ -1,43 +1,7 @@
 import { useFormik } from "formik";
-import * as Yup from "yup";
 import { FiMapPin } from "react-icons/fi";
 import toast from "react-hot-toast";
-
-const customerDetailsSchema = Yup.object({
-    address: Yup.object({
-        street: Yup.string().required("Street is required"),
-        city: Yup.string().required("City is required"),
-        state: Yup.string().required("State is required"),
-        pincode: Yup.number().min(100000, "6 digits").max(999999, "6 digits").required("Pincode required"),
-    }),
-
-    measurements: Yup.object({
-        chest: Yup.number()
-            .nullable()
-            .transform((v, o) => (o === "" ? null : v)),
-
-        waist: Yup.number()
-            .nullable()
-            .transform((v, o) => (o === "" ? null : v)),
-
-        hips: Yup.number()
-            .nullable()
-            .transform((v, o) => (o === "" ? null : v)),
-
-        shoulder: Yup.number()
-            .nullable()
-            .transform((v, o) => (o === "" ? null : v)),
-
-        sleeve: Yup.number()
-            .nullable()
-            .transform((v, o) => (o === "" ? null : v)),
-
-        length: Yup.number()
-            .nullable()
-            .transform((v, o) => (o === "" ? null : v)),
-    }).optional(),
-
-});
+import { customerDetailsSchema } from "../../validations/customerValidations";
 
 const CustomerDetails = ({ formData, updateFormData, onNext, onPrev }) => {
     const formik = useFormik({
@@ -49,11 +13,10 @@ const CustomerDetails = ({ formData, updateFormData, onNext, onPrev }) => {
         onSubmit: (values) => {
             const cleanedValues = { ...values };
 
+            // Remove measurements if all are empty
             if (
                 !cleanedValues.measurements ||
-                Object.values(cleanedValues.measurements).every(
-                    (val) => val === "" || val === undefined
-                )
+                Object.values(cleanedValues.measurements).every((val) => val === "" || val === undefined)
             ) {
                 delete cleanedValues.measurements;
             }
@@ -86,6 +49,7 @@ const CustomerDetails = ({ formData, updateFormData, onNext, onPrev }) => {
                 {formik.touched.address?.street && formik.errors.address?.street && (
                     <p className="text-red-500 text-sm">{formik.errors.address.street}</p>
                 )}
+
                 <div className="grid grid-cols-2 gap-3">
                     <input
                         type="text"
@@ -106,6 +70,7 @@ const CustomerDetails = ({ formData, updateFormData, onNext, onPrev }) => {
                         className="px-3 py-2 border rounded"
                     />
                 </div>
+
                 <input
                     type="text"
                     name="address.pincode"

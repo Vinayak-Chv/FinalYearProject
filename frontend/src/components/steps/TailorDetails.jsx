@@ -1,26 +1,7 @@
 import { useFormik } from "formik";
-import * as Yup from "yup";
 import { FiMapPin } from "react-icons/fi";
 import toast from "react-hot-toast";
-
-const tailorDetailsSchema = Yup.object({
-    workType: Yup.array().min(1, "Select at least one work type"),
-    garmentType: Yup.array().min(1, "Select at least one garment type"),
-    targetSegment: Yup.array().min(1, "Select at least one target segment"),
-    address: Yup.object({
-        street: Yup.string().required(),
-        city: Yup.string().required(),
-        state: Yup.string().required(),
-        pincode: Yup.number().min(100000).max(999999).required(),
-    }),
-    portfolio: Yup.array().optional(),
-    socialLinks: Yup.object({
-        instagram: Yup.string().url().optional(),
-        facebook: Yup.string().url().optional(),
-        whatsapp: Yup.string().optional(),
-        website: Yup.string().url().optional(),
-    }).optional(),
-});
+import { tailorDetailsSchema } from "../../validations/tailorValidations";
 
 const TailorDetails = ({ formData, updateFormData, onNext, onPrev }) => {
     const formik = useFormik({
@@ -34,16 +15,10 @@ const TailorDetails = ({ formData, updateFormData, onNext, onPrev }) => {
         },
         validationSchema: tailorDetailsSchema,
         onSubmit: (values) => {
-            // ✅ FIX: wrap address in array
             const cleanedData = {
                 ...values,
                 role: "tailor",
-                address: [
-                    {
-                        ...values.address,
-                        pincode: Number(values.address.pincode),
-                    }
-                ],
+                address: [{ ...values.address, pincode: Number(values.address.pincode) }],
             };
 
             if (!cleanedData.portfolio?.length) delete cleanedData.portfolio;
@@ -58,7 +33,7 @@ const TailorDetails = ({ formData, updateFormData, onNext, onPrev }) => {
     const handleCheckboxArray = (field, value) => {
         const current = formik.values[field] || [];
         const updated = current.includes(value)
-            ? current.filter(v => v !== value)
+            ? current.filter((v) => v !== value)
             : [...current, value];
         formik.setFieldValue(field, updated);
     };
@@ -67,10 +42,11 @@ const TailorDetails = ({ formData, updateFormData, onNext, onPrev }) => {
         <form onSubmit={formik.handleSubmit} className="space-y-5">
             <h2 className="text-2xl font-bold mb-4 text-center">Tailor Details</h2>
 
+            {/* Work Type */}
             <div>
                 <label className="block font-medium mb-1">Work Type</label>
                 <div className="flex flex-wrap gap-4">
-                    {["stitching", "alterations", "custom design", "embroidery", "repair"].map(type => (
+                    {["stitching", "alterations", "custom design", "embroidery", "repair"].map((type) => (
                         <label key={type} className="flex items-center gap-1">
                             <input
                                 type="checkbox"
@@ -88,10 +64,11 @@ const TailorDetails = ({ formData, updateFormData, onNext, onPrev }) => {
                 )}
             </div>
 
+            {/* Garment Type */}
             <div>
                 <label className="block font-medium mb-1">Garment Type</label>
                 <div className="flex flex-wrap gap-4">
-                    {["Bridal Wear", "Ethnic Wear", "Casual Wear", "Kids Wear"].map(type => (
+                    {["Bridal Wear", "Ethnic Wear", "Casual Wear", "Kids Wear"].map((type) => (
                         <label key={type} className="flex items-center gap-1">
                             <input
                                 type="checkbox"
@@ -109,10 +86,11 @@ const TailorDetails = ({ formData, updateFormData, onNext, onPrev }) => {
                 )}
             </div>
 
+            {/* Target Segment */}
             <div>
                 <label className="block font-medium mb-1">Target Segment</label>
                 <div className="flex flex-wrap gap-4">
-                    {["Men", "Women", "Boys", "Girls"].map(segment => (
+                    {["Men", "Women", "Boys", "Girls"].map((segment) => (
                         <label key={segment} className="flex items-center gap-1">
                             <input
                                 type="checkbox"
@@ -130,6 +108,7 @@ const TailorDetails = ({ formData, updateFormData, onNext, onPrev }) => {
                 )}
             </div>
 
+            {/* Address */}
             <div className="space-y-3">
                 <h3 className="font-semibold">Shop/Studio Address</h3>
                 <div className="relative">
@@ -144,7 +123,6 @@ const TailorDetails = ({ formData, updateFormData, onNext, onPrev }) => {
                         className="w-full pl-10 pr-3 py-2 border rounded"
                     />
                 </div>
-
                 {formik.touched.address?.street && formik.errors.address?.street && (
                     <p className="text-red-500 text-sm">{formik.errors.address.street}</p>
                 )}
@@ -179,12 +157,12 @@ const TailorDetails = ({ formData, updateFormData, onNext, onPrev }) => {
                     onBlur={formik.handleBlur}
                     className="w-full px-3 py-2 border rounded"
                 />
-
                 {formik.touched.address?.pincode && formik.errors.address?.pincode && (
                     <p className="text-red-500 text-sm">{formik.errors.address.pincode}</p>
                 )}
             </div>
 
+            {/* Portfolio */}
             <div>
                 <h3 className="font-semibold mb-2">Portfolio (optional)</h3>
                 <input
@@ -192,7 +170,7 @@ const TailorDetails = ({ formData, updateFormData, onNext, onPrev }) => {
                     name="portfolioUrl"
                     placeholder="Image/Video URL"
                     value={formik.values.portfolio?.[0]?.url || ""}
-                    onChange={e => {
+                    onChange={(e) => {
                         const url = e.target.value;
                         formik.setFieldValue("portfolio", url ? [{ type: "image", url }] : []);
                     }}
@@ -200,14 +178,41 @@ const TailorDetails = ({ formData, updateFormData, onNext, onPrev }) => {
                 />
             </div>
 
+            {/* Social Links */}
             <div>
                 <h3 className="font-semibold mb-2">Social Links (optional)</h3>
-                <div className="space-y-2">
-                    <input type="url" name="socialLinks.instagram" placeholder="Instagram URL" value={formik.values.socialLinks.instagram || ""} onChange={formik.handleChange} className="w-full px-3 py-2 border rounded mb-2" />
-                    <input type="url" name="socialLinks.facebook" placeholder="Facebook URL" value={formik.values.socialLinks.facebook || ""} onChange={formik.handleChange} className="w-full px-3 py-2 border rounded mb-2" />
-                    <input type="text" name="socialLinks.whatsapp" placeholder="WhatsApp (optional)" value={formik.values.socialLinks.whatsapp || ""} onChange={formik.handleChange} className="w-full px-3 py-2 border rounded" />
-                    <input type="url" name="socialLinks.website" placeholder="Website (optional)" value={formik.values.socialLinks.website || ""} onChange={formik.handleChange} className="w-full px-3 py-2 border rounded" />
-                </div>
+                <input
+                    type="url"
+                    name="socialLinks.instagram"
+                    placeholder="Instagram URL"
+                    value={formik.values.socialLinks.instagram || ""}
+                    onChange={formik.handleChange}
+                    className="w-full px-3 py-2 border rounded mb-2"
+                />
+                <input
+                    type="url"
+                    name="socialLinks.facebook"
+                    placeholder="Facebook URL"
+                    value={formik.values.socialLinks.facebook || ""}
+                    onChange={formik.handleChange}
+                    className="w-full px-3 py-2 border rounded mb-2"
+                />
+                <input
+                    type="text"
+                    name="socialLinks.whatsapp"
+                    placeholder="WhatsApp (optional)"
+                    value={formik.values.socialLinks.whatsapp || ""}
+                    onChange={formik.handleChange}
+                    className="w-full px-3 py-2 border rounded mb-2"
+                />
+                <input
+                    type="url"
+                    name="socialLinks.website"
+                    placeholder="Website (optional)"
+                    value={formik.values.socialLinks.website || ""}
+                    onChange={formik.handleChange}
+                    className="w-full px-3 py-2 border rounded"
+                />
             </div>
 
             <div className="flex justify-between mt-6">
