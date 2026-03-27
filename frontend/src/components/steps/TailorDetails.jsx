@@ -37,6 +37,7 @@ const TailorDetails = ({ formData, updateFormData, onNext, onPrev }) => {
             // ✅ FIX: wrap address in array
             const cleanedData = {
                 ...values,
+                role: "tailor",
                 address: [
                     {
                         ...values.address,

@@ -45,12 +45,12 @@ const userSchema = mongoose.Schema({
     ],
     measurements: [
       {
-        chest: { type: Number, required: true },
-        waist: { type: Number, required: true },
-        hips: { type: Number, required: true },
-        shoulder: { type: Number, required: true },
-        sleeve: { type: Number, required: true },
-        length: { type: Number, required: true },
+        chest: Number,
+        waist: Number,
+        hips: Number,
+        shoulder: Number,
+        sleeve: Number,
+        length: Number,
         createdAt: { type: Date, default: Date.now },
       },
     ],

@@ -37,12 +37,30 @@ const DesignerDetails = ({ formData, updateFormData, onNext, onPrev }) => {
         },
         validationSchema: designerDetailsSchema,
         onSubmit: (values) => {
-            // ✅ Remove confirmPassword before saving
-            const { confirmPassword, ...dataToSave } = values;
-            updateFormData(dataToSave);
+            const cleanedData = {
+                ...values,
+                role: "designer",
+                address: [
+                    {
+                        ...values.address,
+                        pincode: Number(values.address.pincode),
+                    }
+                ],
+                portfolio: values.portfolio?.map(p => ({
+                    ...p,
+                    title: p.title || "",
+                    description: p.description || "",
+                })) || [],
+            };
+
+            if (!cleanedData.socialLinks || !Object.keys(cleanedData.socialLinks).length) {
+                delete cleanedData.socialLinks;
+            }
+
+            updateFormData(cleanedData);
             toast.success("Designer details saved");
             onNext();
-        },
+        }
     });
 
     const handleCheckboxArray = (field, value) => {
