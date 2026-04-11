@@ -5,6 +5,8 @@ import AuthLayout from "../layouts/AuthLayout";
 // Public Pages (with navbar/footer)
 import Home from "../pages/Home";
 import Collection from "../pages/Collection";
+import GenderCollection from '../pages/GenderCollection';
+import OutfitTypeCollection from '../pages/OutfitTypeCollection';
 import TailorList from "../pages/TailorList";
 import TailorDetail from "../pages/TailorDetail";
 import ProductDetail from "../pages/ProductDetail";
@@ -22,6 +24,8 @@ const Index = () => {
       <Route element={<MainLayout />}>
         <Route path="/" element={<Home />} />
         <Route path="/collection" element={<Collection />} />
+        <Route path="/collection/:gender" element={<GenderCollection />} />
+        <Route path="/collection/:gender/:outfitType" element={<OutfitTypeCollection />} />
         <Route path="/tailors" element={<TailorList />} />
         <Route path="/tailor/:id" element={<TailorDetail />} />
         <Route path="/collection/product/:id" element={<ProductDetail />} />
