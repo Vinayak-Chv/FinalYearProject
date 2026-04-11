@@ -10,18 +10,45 @@ const GenderCollection = () => {
     const { products, loading } = useProducts();
 
     const [filters, setFilters] = useState({
-        gender: gender,        // pre‑set gender
-        category: ""
+        gender: gender,
+        category: [],
+        priceMin: "",
+        priceMax: "",
+        inStock: false,
+        customizable: false,
+        fabric: []
     });
+
     const [sortBy, setSortBy] = useState('default');
     const [searchTerm, setSearchTerm] = useState("");
 
-    // Filter products by gender first (safety)
+    // Filter products by gender
     const genderFiltered = useMemo(() => {
         return products.filter(p => p?.gender?.toLowerCase() === gender);
     }, [products, gender]);
 
-    // Apply additional filters (category, search) on genderFiltered
+    // Price range
+    const priceBounds = useMemo(() => {
+        if (genderFiltered.length === 0) return { min: 0, max: 10000 };
+        const prices = genderFiltered.map(p => p.price || 0);
+        return {
+            min: Math.min(...prices),
+            max: Math.max(...prices),
+        };
+    }, [genderFiltered]);
+
+    // Fabric options
+    const fabricOptions = useMemo(() => {
+        const fabrics = new Set();
+        genderFiltered.forEach(p => {
+            if (Array.isArray(p.fabric)) {
+                p.fabric.forEach(f => fabrics.add(f.toLowerCase()));
+            }
+        });
+        return Array.from(fabrics).sort();
+    }, [genderFiltered]);
+
+    // Apply ALL filters
     const filteredProducts = genderFiltered.filter(product => {
         const productGender = product?.gender?.toLowerCase() || '';
 
@@ -32,17 +59,17 @@ const GenderCollection = () => {
             : [];
         const normalizedCategories = productCategories.map(c => c.toLowerCase().trim());
 
-        // Search filter
+        // Search
         if (searchTerm) {
             const titleMatch = product.title?.toLowerCase().includes(searchTerm.toLowerCase());
             if (!titleMatch) return false;
         }
 
-        // Gender filter (already pre‑filtered, but keep for consistency)
+        // Gender
         if (filters.gender && filters.gender !== productGender) return false;
 
-        // Category filter
-        if (filters.category.length > 0) {
+        // Category
+        if ((filters.category || []).length > 0) {
             const selectedCategories = filters.category.map(c => c.toLowerCase());
             const hasBridal = selectedCategories.includes('bridal');
             const hasEthnic = selectedCategories.includes('ethnic');
@@ -53,6 +80,23 @@ const GenderCollection = () => {
                 if (!selectedCategories.some(selected => normalizedCategories.includes(selected))) return false;
             }
         }
+
+        // Price
+        if (filters.priceMin !== "" && product.price < filters.priceMin) return false;
+        if (filters.priceMax !== "" && product.price > filters.priceMax) return false;
+
+        // Stock
+        if (filters.inStock && !product.inStock) return false;
+
+        // Customizable
+        if (filters.customizable && !product.isCustomizable) return false;
+
+        // Fabric
+        if ((filters.fabric || []).length > 0) {
+            const productFabrics = product.fabric?.map(f => f.toLowerCase()) || [];
+            if (!filters.fabric.some(f => productFabrics.includes(f))) return false;
+        }
+
         return true;
     });
 
@@ -68,7 +112,13 @@ const GenderCollection = () => {
     return (
         <div className='flex gap-8 min-h-screen pt-8'>
             <aside className='w-[30%] sticky top-20 self-start'>
-                <FilterSidebar filters={filters} setFilters={setFilters} />
+                <FilterSidebar
+                    filters={filters}
+                    setFilters={setFilters}
+                    fabricOptions={fabricOptions}
+                    minPrice={priceBounds.min}
+                    maxPrice={priceBounds.max}
+                />
             </aside>
 
             <main className='w-[70%] overflow-y-auto pr-2 custom-scrollbar'>
@@ -80,9 +130,11 @@ const GenderCollection = () => {
                         setSortyBy={setSortBy}
                     />
                 </div>
+
                 <p className='text-sm text-text-secondary text-right mb-4'>
                     {sortedProducts.length} {sortedProducts.length === 1 ? "item" : "items"} found
                 </p>
+
                 <ProductGrid products={sortedProducts} />
             </main>
         </div>

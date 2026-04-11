@@ -1,30 +1,47 @@
+import { useState, useEffect } from "react";
 import { FaFilterCircleXmark } from "react-icons/fa6";
 
-const FilterSidebar = ({ filters, setFilters }) => {
-    const genderOptions = ['men', 'women', 'boys', 'girls'];
-    const categoryOptions = ['bridal', 'ethnic'];
+const FilterSidebar = ({
+    filters,
+    setFilters,
+    fabricOptions,
+    minPrice,
+    maxPrice,
+}) => {
+    // Local state for the slider (max price)
+    const [localMax, setLocalMax] = useState(filters.priceMax !== "" ? filters.priceMax : maxPrice);
 
-    // Handle gender single value
-    const handleGenderChange = (gender) => {
-        setFilters({ ...filters, gender });
+    useEffect(() => {
+        setLocalMax(filters.priceMax !== "" ? filters.priceMax : maxPrice);
+    }, [filters.priceMax, maxPrice]);
+
+    const handleMaxChange = (e) => {
+        const val = Number(e.target.value);
+        setLocalMax(val);
+        setFilters({ ...filters, priceMax: val });
     };
 
-    // Handle category multiple values(array)
-    const handleCategoryChange = (category) => {
-        let updated = [...filters.category];
-        if (updated.includes(category)) {
-            updated = updated.filter(c => c !== category);
-        } else {
-            updated.push(category);
-        }
-        setFilters({ ...filters, category: updated });
+    const handleInStockChange = () => {
+        setFilters({ ...filters, inStock: !filters.inStock });
     };
-
+    const handleCustomizableChange = () => {
+        setFilters({ ...filters, customizable: !filters.customizable });
+    };
+    const handleFabricChange = (fabric) => {
+        const updated = filters.fabric.includes(fabric)
+            ? filters.fabric.filter((f) => f !== fabric)
+            : [...filters.fabric, fabric];
+        setFilters({ ...filters, fabric: updated });
+    };
     const clearFilters = () => {
         setFilters({
-            gender: "",
-            category: ""
+            priceMin: "",
+            priceMax: "",
+            inStock: false,
+            customizable: false,
+            fabric: [],
         });
+        setLocalMax(maxPrice);
     };
 
     return (
@@ -41,62 +58,79 @@ const FilterSidebar = ({ filters, setFilters }) => {
                 </button>
             </div>
 
-            {/* Gender Filter (Radio) */}
-            <div className="mb-8">
-                <h3 className="font-semibold mb-3 text-text-primary border-b pb-2">
-                    Gender
-                </h3>
-                <div className="space-y-3">
-                    {genderOptions.map(gender => (
-                        <label
-                            key={gender}
-                            className="flex items-center gap-3 cursor-pointer group"
-                        >
-                            <input
-                                type="radio"
-                                name="gender"
-                                value={gender}
-                                checked={filters.gender === gender}
-                                onChange={() => handleGenderChange(gender)}
-                                className="w-4 h-4 text-primary focus:ring-primary"
-                            />
-                            <span className="capitalize text-text-secondary group-hover:text-primary transition">
-                                {gender}
-                            </span>
-                        </label>
-                    ))}
+            {/* Price Range – Single Slider for Max */}
+            <div className="mb-6">
+                <h3 className="font-semibold mb-2 text-text-primary">Max Price</h3>
+                <div className="flex justify-between text-sm mb-1">
+                    <span>₹{minPrice}</span>
+                    <span>₹{localMax}</span>
                 </div>
+                <input
+                    type="range"
+                    min={minPrice}
+                    max={maxPrice}
+                    value={localMax ?? 0}
+                    onChange={handleMaxChange}
+                    className="w-full accent-primary"
+                />
+                <p className="text-xs text-text-secondary mt-1">Showing items up to ₹{localMax}</p>
             </div>
 
-            {/* Category Filter (Checkbox) */}
-            <div>
-                <h3 className="font-semibold mb-3 text-text-primary border-b pb-2">
-                    Collection Type
-                </h3>
-                <div className="space-y-3">
-                    {categoryOptions.map(category => (
-                        <label
-                            key={category}
-                            className="flex items-center gap-3 cursor-pointer group"
-                        >
-                            <input
-                                type="checkbox"
-                                checked={filters.category.includes(category)}
-                                onChange={() => handleCategoryChange(category)}
-                                className="w-4 h-4 text-primary rounded focus:ring-primary"
-                            />
-                            <span className="capitalize text-text-secondary group-hover:text-primary transition">
-                                {category}
-                            </span>
-                        </label>
-                    ))}
-                    {filters.category.length > 0 && (
-                        <p className="text-xs text-primary mt-1">
-                            {filters.category.length} selected
-                        </p>
-                    )}
-                </div>
+            {/* In Stock Toggle */}
+            <div className="mb-4">
+                <label className="flex items-center justify-between cursor-pointer">
+                    <span className="text-text-secondary">In Stock only</span>
+                    <button
+                        type="button"
+                        onClick={handleInStockChange}
+                        className={`relative inline-flex h-6 w-11 items-center rounded-full transition ${filters.inStock ? "bg-primary" : "bg-neutral-light"
+                            }`}
+                    >
+                        <span
+                            className={`inline-block h-4 w-4 transform rounded-full bg-white transition ${filters.inStock ? "translate-x-6" : "translate-x-1"
+                                }`}
+                        />
+                    </button>
+                </label>
             </div>
+
+            {/* Customizable Toggle */}
+            <div className="mb-6">
+                <label className="flex items-center justify-between cursor-pointer">
+                    <span className="text-text-secondary">Customizable only</span>
+                    <button
+                        type="button"
+                        onClick={handleCustomizableChange}
+                        className={`relative inline-flex h-6 w-11 items-center rounded-full transition ${filters.customizable ? "bg-primary" : "bg-neutral-light"
+                            }`}
+                    >
+                        <span
+                            className={`inline-block h-4 w-4 transform rounded-full bg-white transition ${filters.customizable ? "translate-x-6" : "translate-x-1"
+                                }`}
+                        />
+                    </button>
+                </label>
+            </div>
+
+            {/* Fabric Filter */}
+            {fabricOptions?.length > 0 && (
+                <div>
+                    <h3 className="font-semibold mb-2 text-text-primary border-b pb-2">Fabric</h3>
+                    <div className="space-y-2 max-h-48 overflow-y-auto">
+                        {fabricOptions.map((fabric) => (
+                            <label key={fabric} className="flex items-center gap-3 cursor-pointer">
+                                <input
+                                    type="checkbox"
+                                    checked={filters.fabric.includes(fabric)}
+                                    onChange={() => handleFabricChange(fabric)}
+                                    className="w-4 h-4 text-primary rounded focus:ring-primary"
+                                />
+                                <span className="capitalize text-text-secondary">{fabric}</span>
+                            </label>
+                        ))}
+                    </div>
+                </div>
+            )}
         </aside>
     );
 };
