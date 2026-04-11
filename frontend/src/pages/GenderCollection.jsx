@@ -19,7 +19,6 @@ const GenderCollection = () => {
         fabric: []
     });
 
-    const [sortBy, setSortBy] = useState('default');
     const [searchTerm, setSearchTerm] = useState("");
 
     // Filter products by gender
@@ -48,7 +47,7 @@ const GenderCollection = () => {
         return Array.from(fabrics).sort();
     }, [genderFiltered]);
 
-    // Apply ALL filters
+    // Apply filters
     const filteredProducts = genderFiltered.filter(product => {
         const productGender = product?.gender?.toLowerCase() || '';
 
@@ -57,6 +56,7 @@ const GenderCollection = () => {
                 ? product.category
                 : product.category.split(/[,|]/)
             : [];
+
         const normalizedCategories = productCategories.map(c => c.toLowerCase().trim());
 
         // Search
@@ -65,24 +65,16 @@ const GenderCollection = () => {
             if (!titleMatch) return false;
         }
 
-        // Gender
-        if (filters.gender && filters.gender !== productGender) return false;
-
         // Category
         if ((filters.category || []).length > 0) {
             const selectedCategories = filters.category.map(c => c.toLowerCase());
-            const hasBridal = selectedCategories.includes('bridal');
-            const hasEthnic = selectedCategories.includes('ethnic');
 
-            if (hasBridal && hasEthnic) {
-                if (!normalizedCategories.includes('fusion')) return false;
-            } else {
-                if (!selectedCategories.some(selected => normalizedCategories.includes(selected))) return false;
+            if (!selectedCategories.some(cat => normalizedCategories.includes(cat))) {
+                return false;
             }
         }
 
         // Price
-        if (filters.priceMin !== "" && product.price < filters.priceMin) return false;
         if (filters.priceMax !== "" && product.price > filters.priceMax) return false;
 
         // Stock
@@ -100,18 +92,13 @@ const GenderCollection = () => {
         return true;
     });
 
-    // Sorting
-    const sortedProducts = [...filteredProducts].sort((a, b) => {
-        if (sortBy === 'price-low') return a.price - b.price;
-        if (sortBy === 'price-high') return b.price - a.price;
-        return 0;
-    });
-
     if (loading) return <div className='text-center py-12'>Loading...</div>;
 
     return (
         <div className='flex gap-8 min-h-screen pt-8'>
-            <aside className='w-[30%] sticky top-20 self-start'>
+
+            {/* FIXED SIDEBAR */}
+            <aside className='w-[30%] sticky top-24 self-start'>
                 <FilterSidebar
                     filters={filters}
                     setFilters={setFilters}
@@ -121,21 +108,21 @@ const GenderCollection = () => {
                 />
             </aside>
 
+            {/* RIGHT SIDE */}
             <main className='w-[70%] overflow-y-auto pr-2 custom-scrollbar'>
+
                 <div className='sticky top-0 bg-background py-4 z-10'>
                     <SearchSort
                         searchTerm={searchTerm}
                         setSearchTerm={setSearchTerm}
-                        sortBy={sortBy}
-                        setSortyBy={setSortBy}
                     />
                 </div>
 
                 <p className='text-sm text-text-secondary text-right mb-4'>
-                    {sortedProducts.length} {sortedProducts.length === 1 ? "item" : "items"} found
+                    {filteredProducts.length} {filteredProducts.length === 1 ? "item" : "items"} found
                 </p>
 
-                <ProductGrid products={sortedProducts} />
+                <ProductGrid products={filteredProducts} />
             </main>
         </div>
     );
