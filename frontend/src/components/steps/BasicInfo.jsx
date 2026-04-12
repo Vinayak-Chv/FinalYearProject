@@ -1,10 +1,14 @@
+import { useState } from "react";
 import { useFormik } from "formik";
 import { FiUser, FiPhone } from "react-icons/fi";
 import toast from "react-hot-toast";
 import { tailorBasicInfoSchema } from "../../validations/tailorValidations";
 import { designerBasicInfoSchema } from "../../validations/designerValidations";
+import AvatarUpload from "../AvatarUpload";
 
 const BasicInfo = ({ role, formData, updateFormData, onNext }) => {
+    const [avatarUrl, setAvatarUrl] = useState(formData.avatar || "");
+
     const validationSchema =
         role === "tailor"
             ? tailorBasicInfoSchema
@@ -28,11 +32,17 @@ const BasicInfo = ({ role, formData, updateFormData, onNext }) => {
         },
         validationSchema,
         onSubmit: (values) => {
-            updateFormData(values);
+            // Include avatar in the data sent to parent
+            updateFormData({ ...values, avatar: avatarUrl });
             toast.success("Basic info saved");
             onNext();
         },
     });
+
+    const handleAvatarUpload = (url) => {
+        setAvatarUrl(url);
+        // Optionally update parent immediately (but we'll do it on submit)
+    };
 
     const handleCheckboxArray = (field, value) => {
         const current = formik.values[field] || [];
@@ -45,6 +55,9 @@ const BasicInfo = ({ role, formData, updateFormData, onNext }) => {
     return (
         <form onSubmit={formik.handleSubmit} className="space-y-5">
             <h2 className="text-2xl font-bold mb-4 text-center">Basic Information</h2>
+
+            {/* Avatar Upload */}
+            <AvatarUpload onUpload={handleAvatarUpload} currentAvatar={avatarUrl} />
 
             {/* Name */}
             <div className="relative">
