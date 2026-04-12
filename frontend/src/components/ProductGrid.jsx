@@ -1,6 +1,6 @@
 import ProductCard from './ProductCard'
 
-const ProductGrid = ({ products }) => {
+const ProductGrid = ({ products, discount = 0 }) => {
     if (products.length === 0) {
         return (
             <div className='text-center py-12 bg-gray-50 rounded-lg'>
@@ -11,9 +11,9 @@ const ProductGrid = ({ products }) => {
 
     return (
         <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4'>
-            {products.map(product => {
-                return <ProductCard key={product._id} product={product} />
-            })}
+            {products.map(product => (
+                <ProductCard key={product._id} product={product} discount={discount} />
+            ))}
         </div>
     )
 }

@@ -139,7 +139,7 @@ const EventCollection = () => {
                                 Change Gender
                             </button>
                         </div>
-                        <ProductGrid products={filteredProducts} />
+                        <ProductGrid products={filteredProducts} discount={20} />
                     </main>
                 </div>
             )}
