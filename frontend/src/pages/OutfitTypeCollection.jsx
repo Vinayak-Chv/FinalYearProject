@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import { useProducts } from '../Context/productContext';
-import FilterSidebar from '../components/FilterSidebar'; // 👈 changed
+import FilterSidebar from '../components/FilterSidebar';
 import ProductGrid from '../components/ProductGrid';
 
 const OutfitTypeCollection = () => {

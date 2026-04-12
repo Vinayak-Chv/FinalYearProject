@@ -1,24 +1,23 @@
 import { useState, useEffect } from "react";
 import { FaFilterCircleXmark } from "react-icons/fa6";
 
-const FilterSidebar = ({
+const EventFilterSidebar = ({
     filters,
     setFilters,
     fabricOptions,
     minPrice,
     maxPrice,
 }) => {
-    // Local state for the slider (max price)
-    const [localMax, setLocalMax] = useState(filters.priceMax !== "" ? filters.priceMax : maxPrice);
+    const [localMaxPrice, setLocalMaxPrice] = useState(filters.maxPrice !== "" ? filters.maxPrice : maxPrice);
 
     useEffect(() => {
-        setLocalMax(filters.priceMax !== "" ? filters.priceMax : maxPrice);
-    }, [filters.priceMax, maxPrice]);
+        setLocalMaxPrice(filters.maxPrice !== "" ? filters.maxPrice : maxPrice);
+    }, [filters.maxPrice, maxPrice]);
 
-    const handleMaxChange = (e) => {
+    const handleMaxPriceChange = (e) => {
         const val = Number(e.target.value);
-        setLocalMax(val);
-        setFilters({ ...filters, priceMax: val });
+        setLocalMaxPrice(val);
+        setFilters({ ...filters, maxPrice: val });
     };
 
     const handleInStockChange = () => {
@@ -35,20 +34,17 @@ const FilterSidebar = ({
     };
     const clearFilters = () => {
         setFilters({
-            priceMin: "",
-            priceMax: "",
+            maxPrice: "",
             inStock: false,
             customizable: false,
             fabric: [],
         });
-        setLocalMax(maxPrice);
+        setLocalMaxPrice(maxPrice);
     };
 
     return (
         <aside className="bg-accent p-6 rounded-lg shadow-md md:sticky md:top-20 md:max-h-[calc(100vh-5rem)] md:overflow-y-auto custom-scrollbar">
-
-            {/* Header */}
-            <div className="flex justify-between items-center mb-6 sticky top-0 py-2">
+            <div className="flex justify-between items-center mb-6 bg-accent sticky top-0 py-2 z-10">
                 <h2 className="text-xl font-bold text-text-primary">Filters</h2>
                 <button
                     onClick={clearFilters}
@@ -59,22 +55,21 @@ const FilterSidebar = ({
                 </button>
             </div>
 
-            {/* Price Range – Single Slider for Max */}
+            {/* Price Slider */}
             <div className="mb-6">
                 <h3 className="font-semibold mb-2 text-text-primary">Max Price</h3>
                 <div className="flex justify-between text-sm mb-1">
                     <span>₹{minPrice}</span>
-                    <span>₹{localMax}</span>
+                    <span>₹{localMaxPrice}</span>
                 </div>
                 <input
                     type="range"
                     min={minPrice}
                     max={maxPrice}
-                    value={localMax ?? 0}
-                    onChange={handleMaxChange}
+                    value={localMaxPrice}
+                    onChange={handleMaxPriceChange}
                     className="w-full accent-primary"
                 />
-                <p className="text-xs text-text-secondary mt-1">Showing items up to ₹{localMax}</p>
             </div>
 
             {/* In Stock Toggle */}
@@ -84,13 +79,9 @@ const FilterSidebar = ({
                     <button
                         type="button"
                         onClick={handleInStockChange}
-                        className={`relative inline-flex h-6 w-11 items-center rounded-full transition ${filters.inStock ? "bg-primary" : "bg-neutral-light"
-                            }`}
+                        className={`relative inline-flex h-6 w-11 items-center rounded-full transition ${filters.inStock ? "bg-primary" : "bg-neutral-light"}`}
                     >
-                        <span
-                            className={`inline-block h-4 w-4 transform rounded-full bg-white transition ${filters.inStock ? "translate-x-6" : "translate-x-1"
-                                }`}
-                        />
+                        <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition ${filters.inStock ? "translate-x-6" : "translate-x-1"}`} />
                     </button>
                 </label>
             </div>
@@ -102,22 +93,18 @@ const FilterSidebar = ({
                     <button
                         type="button"
                         onClick={handleCustomizableChange}
-                        className={`relative inline-flex h-6 w-11 items-center rounded-full transition ${filters.customizable ? "bg-primary" : "bg-neutral-light"
-                            }`}
+                        className={`relative inline-flex h-6 w-11 items-center rounded-full transition ${filters.customizable ? "bg-primary" : "bg-neutral-light"}`}
                     >
-                        <span
-                            className={`inline-block h-4 w-4 transform rounded-full bg-white transition ${filters.customizable ? "translate-x-6" : "translate-x-1"
-                                }`}
-                        />
+                        <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition ${filters.customizable ? "translate-x-6" : "translate-x-1"}`} />
                     </button>
                 </label>
             </div>
 
             {/* Fabric Filter */}
-            {fabricOptions?.length > 0 && (
+            {fabricOptions.length > 0 && (
                 <div>
                     <h3 className="font-semibold mb-2 text-text-primary border-b pb-2">Fabric</h3>
-                    <div className="space-y-2 max-h-40 overflow-y-auto pr-1">
+                    <div className="space-y-2 max-h-48 overflow-y-auto">
                         {fabricOptions.map((fabric) => (
                             <label key={fabric} className="flex items-center gap-3 cursor-pointer">
                                 <input
@@ -136,4 +123,4 @@ const FilterSidebar = ({
     );
 };
 
-export default FilterSidebar;
+export default EventFilterSidebar;
