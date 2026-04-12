@@ -1,9 +1,11 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import axios from "axios";
+import { useAuth } from "./AuthContext";
 
 const CartContext = createContext();
 
 export const CartProvider = ({ children }) => {
+    const { user } = useAuth();
     const [cartItems, setCartItems] = useState([]);
     const [loading, setLoading] = useState(true);
 
@@ -17,6 +19,8 @@ export const CartProvider = ({ children }) => {
         }
 
         try {
+            setLoading(true);
+
             const { data } = await axios.get("http://localhost:3000/api/cart", {
                 headers: { Authorization: `Bearer ${token}` },
             });
@@ -24,6 +28,7 @@ export const CartProvider = ({ children }) => {
             setCartItems(data?.cart?.items || []);
         } catch (error) {
             console.error("Failed to fetch cart:", error.response?.data || error.message);
+            setCartItems([]);
         } finally {
             setLoading(false);
         }
@@ -31,7 +36,7 @@ export const CartProvider = ({ children }) => {
 
     useEffect(() => {
         fetchCart();
-    }, []);
+    }, [user]);
 
     const addToCart = async (product, price, discountPercentage = 0) => {
         const token = localStorage.getItem("authToken");
