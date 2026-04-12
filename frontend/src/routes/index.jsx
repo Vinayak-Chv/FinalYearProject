@@ -13,6 +13,7 @@ import ProductDetail from "../pages/ProductDetail";
 import About from "../pages/About";
 import Contact from "../pages/Contact";
 import EventCollection from "../pages/EventCollection";
+import Cart from "../pages/Cart";
 
 // Auth Pages (without navbar/footer)
 import Register from "../pages/Register";
@@ -29,6 +30,7 @@ const Index = () => {
         <Route path="/collection/:gender/:outfitType" element={<OutfitTypeCollection />} />
         <Route path="/tailors" element={<TailorList />} />
         <Route path="/tailor/:id" element={<TailorDetail />} />
+        <Route path="/cart" element={<Cart />} />
         <Route path="/collection/event/:eventId" element={<EventCollection />} />
         <Route path="/collection/product/:id" element={<ProductDetail />} />
         <Route path="/about" element={<About />} />

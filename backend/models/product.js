@@ -53,4 +53,4 @@ const productSchema = mongoose.Schema({
   },
 });
 
-export default mongoose.model("dummy_data", productSchema, "dummy_data");
+export default mongoose.model("Product", productSchema, "dummy_data");
