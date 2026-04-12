@@ -13,35 +13,25 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Safe localStorage handling
     const storedUser = localStorage.getItem("user");
-
     if (storedUser && storedUser !== "undefined") {
       try {
         setUser(JSON.parse(storedUser));
       } catch (error) {
         console.error("Invalid user in localStorage");
-        localStorage.removeItem("user"); // cleanup corrupted data
+        localStorage.removeItem("user");
       }
     }
-
     setLoading(false);
   }, []);
 
-  // Login function
   const login = async (email, password) => {
     try {
-      const res = await axios.post(
-        "http://localhost:3000/api/auth/login",
-        { email, password }
-      );
-
+      const res = await axios.post("http://localhost:3000/api/auth/login", { email, password });
       const userData = res.data.data;
-
       setUser(userData);
       localStorage.setItem("user", JSON.stringify(userData));
       localStorage.setItem("authToken", userData.token);
-
       return { success: true };
     } catch (error) {
       return {
@@ -51,15 +41,21 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // Logout function
   const logout = () => {
     setUser(null);
     localStorage.removeItem("user");
     localStorage.removeItem("authToken");
   };
 
+  // New function to manually set user (for registration)
+  const setUserData = (userData) => {
+    setUser(userData);
+    localStorage.setItem("user", JSON.stringify(userData));
+    if (userData.token) localStorage.setItem("authToken", userData.token);
+  };
+
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout }}>
+    <AuthContext.Provider value={{ user, loading, login, logout, setUserData }}>
       {children}
     </AuthContext.Provider>
   );

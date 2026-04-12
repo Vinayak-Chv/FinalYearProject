@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import toast from "react-hot-toast";
+import { useAuth } from "../context/AuthContext";
 import RoleSelection from "../components/steps/RoleSelection";
 import Credentials from "../components/steps/Credentials";
 import BasicInfo from "../components/steps/BasicInfo";
@@ -26,6 +27,7 @@ const stepComponents = {
 
 const Register = () => {
   const navigate = useNavigate();
+  const { setUserData } = useAuth();
   const [stepIndex, setStepIndex] = useState(0);
   const [role, setRole] = useState(null);
   const [formData, setFormData] = useState({});
@@ -41,15 +43,12 @@ const Register = () => {
   const submitRegistration = async () => {
     const endpoint = `http://localhost:3000/api/auth/register/${role}`;
 
-    // Deep copy the formData
     const cleanedData = JSON.parse(JSON.stringify(formData));
 
-    // Convert address.pincode to number if it exists
     if (cleanedData.address?.pincode) {
       cleanedData.address.pincode = Number(cleanedData.address.pincode);
     }
 
-    // Recursive function to remove empty optional fields
     const removeEmptyFields = (obj) => {
       Object.keys(obj).forEach((key) => {
         if (
@@ -71,8 +70,8 @@ const Register = () => {
       const { data } = await axios.post(endpoint, cleanedData);
 
       if (data.success) {
-        localStorage.setItem("token", data.data.token);
-        localStorage.setItem("user", JSON.stringify(data.data));
+        // 👇 Store in localStorage and update AuthContext state
+        setUserData(data.data);
         toast.success("Registration successful!");
         navigate("/");
       } else {
