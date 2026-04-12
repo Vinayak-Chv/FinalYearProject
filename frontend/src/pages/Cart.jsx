@@ -24,7 +24,7 @@ const Cart = () => {
 
   const handleQuantityChange = (item, newQuantity) => {
     if (newQuantity < 1) return;
-    updateQuantity(item.productId, item.price, newQuantity);
+    updateQuantity(item.productId?._id || item.productId, newQuantity);
   };
 
   return (
@@ -45,7 +45,10 @@ const Cart = () => {
           </thead>
           <tbody>
             {cartItems.map((item, index) => (
-              <tr key={`${item.productId}-${item.price}`} className="border-b">
+              <tr
+                key={`${item.productId?._id || item.productId}-${item.price}`}
+                className="border-b"
+              >
                 <td className="px-4 py-2">{index + 1}</td>
                 <td className="px-4 py-2">
                   <img src={item.image} alt={item.title} className="w-16 h-16 object-cover rounded" />
@@ -72,7 +75,7 @@ const Cart = () => {
                 <td className="px-4 py-2">₹{item.price * item.quantity}</td>
                 <td className="px-4 py-2">
                   <button
-                    onClick={() => removeFromCart(item.productId, item.price)}
+                    onClick={() => removeFromCart(item.productId?._id || item.productId)}
                     className="text-red-500 hover:text-red-700"
                   >
                     <FiTrash2 />
@@ -83,6 +86,7 @@ const Cart = () => {
           </tbody>
         </table>
       </div>
+
       <div className="mt-6 flex justify-end">
         <div className="bg-gray-50 p-4 rounded-lg w-64">
           <div className="flex justify-between font-bold text-lg">
