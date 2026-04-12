@@ -11,16 +11,17 @@ const Review = ({ formData, onSubmit, goToStep }) => {
         </div>
     );
 
+    // Filter out avatar and confirmPassword
+    const filteredData = Object.fromEntries(
+        Object.entries(formData).filter(([key]) => key !== "avatar" && key !== "confirmPassword")
+    );
+
     return (
         <div>
             <h2 className="text-2xl font-bold mb-4 text-center">Review Your Information</h2>
             <div className="bg-gray-50 p-4 rounded-lg space-y-2">
-                {Object.entries(formData).map(([key, val]) => {
-                    // Skip confirmPassword completely
-                    if (key === "confirmPassword") return null;
-
+                {Object.entries(filteredData).map(([key, val]) => {
                     if (val && typeof val === "object" && !Array.isArray(val)) {
-                        // For nested objects like address, socialLinks, etc.
                         return (
                             <div key={key}>
                                 <h3 className="font-semibold mt-2 capitalize">{key}</h3>
@@ -32,18 +33,14 @@ const Review = ({ formData, onSubmit, goToStep }) => {
                             </div>
                         );
                     } else {
-                        return (
-                            <div key={key}>
-                                {renderField(key, val)}
-                            </div>
-                        );
+                        return <div key={key}>{renderField(key, val)}</div>;
                     }
                 })}
             </div>
             <div className="flex justify-between mt-6">
                 <button
                     type="button"
-                    onClick={() => goToStep(3)} // go to previous step (roleDetails)
+                    onClick={() => goToStep(3)}
                     className="text-primary hover:underline"
                 >
                     Back to edit
