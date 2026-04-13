@@ -10,6 +10,7 @@ import cartRoutes from "./routes/cartRoutes.js";
 import messageRoutes from "./routes/messageRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import orderRoutes from "./routes/orderRoutes.js";
+import consultationRoutes from "./routes/consultationRoutes.js";
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -26,6 +27,7 @@ app.use("/api/cart", cartRoutes);
 app.use("/api/messages", messageRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/orders", orderRoutes);
+app.use("/api/consultations", consultationRoutes);
 
 connectDB()
   .then(() => {
