@@ -6,7 +6,7 @@ import { FiVideo, FiSend, FiStar } from "react-icons/fi";
 
 const ConsultDetail = () => {
     const { id } = useParams();
-    const { user } = useAuth();
+    const { user, loading: authLoading } = useAuth();
     const token = localStorage.getItem("authToken");
     const [professional, setProfessional] = useState(null);
     const [conversation, setConversation] = useState(null);
@@ -92,7 +92,7 @@ const ConsultDetail = () => {
     };
 
     const sendMessage = async () => {
-        if (!newMessage.trim()) return;
+        if (!newMessage.trim() || !conversation?._id || !user?._id) return;
         try {
             await axios.post(
                 "http://localhost:3000/api/messages/send",
@@ -109,9 +109,11 @@ const ConsultDetail = () => {
         }
     };
 
-    const roomName = [user._id, id].sort().join("-");
+    const roomName = user?._id ? [user._id, id].sort().join("-") : "";
 
-    if (loading || !professional) return <div className="py-8 text-center">Loading...</div>;
+    if (loading || authLoading || !professional || !user) {
+        return <div className="py-8 text-center">Loading...</div>;
+    }
 
     return (
         <div className="py-8 space-y-6">
@@ -194,12 +196,12 @@ const ConsultDetail = () => {
                         {messages.map((msg) => (
                             <div
                                 key={msg._id}
-                                className={`flex ${msg.senderId === user._id ? "justify-end" : "justify-start"}`}
+                                className={`flex ${msg.senderId === user?._id ? "justify-end" : "justify-start"}`}
                             >
                                 <div
-                                    className={`max-w-xs px-4 py-2 rounded-lg ${msg.senderId === user._id
-                                            ? "bg-primary text-white"
-                                            : "bg-gray-200 text-gray-800"
+                                    className={`max-w-xs px-4 py-2 rounded-lg ${msg.senderId === user?._id
+                                        ? "bg-primary text-white"
+                                        : "bg-gray-200 text-gray-800"
                                         }`}
                                 >
                                     {msg.text}

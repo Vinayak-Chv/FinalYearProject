@@ -4,10 +4,9 @@ export const getProfessionals = async (req, res) => {
   try {
     const professionals = await User.find(
       { role: { $in: ["tailor", "designer"] } },
-      "name avatar role tailorProfile.designerProfile",
+      "name avatar role tailorProfile designerProfile",
     ).lean();
 
-    // Format response
     const formatted = professionals.map((prof) => ({
       _id: prof._id,
       name: prof.name,
@@ -21,6 +20,38 @@ export const getProfessionals = async (req, res) => {
     }));
 
     res.json({ success: true, professionals: formatted });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export const getProfessionalById = async (req, res) => {
+  try {
+    const professional = await User.findOne({
+      _id: req.params.id,
+      role: { $in: ["tailor", "designer"] },
+    }).lean();
+
+    if (!professional) {
+      return res.status(404).json({
+        success: false,
+        message: "Professional not found",
+      });
+    }
+
+    res.json({
+      success: true,
+      professional: {
+        _id: professional._id,
+        name: professional.name,
+        avatar:
+          professional.avatar ||
+          "https://cdn-icons-png.flaticon.com/512/149/149071.png",
+        role: professional.role,
+        tailorProfile: professional.tailorProfile || null,
+        designerProfile: professional.designerProfile || null,
+      },
+    });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
