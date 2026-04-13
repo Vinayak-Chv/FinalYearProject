@@ -28,6 +28,11 @@ const Navbar = () => {
           <nav className="hidden md:flex gap-4">
             <NavLink to="/" className="text-white hover:text-accent text-base">Home</NavLink>
             <NavLink to="/collection" className="text-white hover:text-accent text-base">Collection</NavLink>
+            {user && (
+              <NavLink to="/consult" className="text-white hover:text-accent text-base">
+                Consult
+              </NavLink>
+            )}
             <NavLink to="/about" className="text-white hover:text-accent text-base">About</NavLink>
             <NavLink to="/contact" className="text-white hover:text-accent text-base">Contact</NavLink>
           </nav>

@@ -14,6 +14,9 @@ import About from "../pages/About";
 import Contact from "../pages/Contact";
 import EventCollection from "../pages/EventCollection";
 import Cart from "../pages/Cart";
+import Messages from "../pages/Messages";
+import Consult from "../pages/Consult";
+import ConsultDetail from "../pages/ConsultDetail";
 
 // Auth Pages (without navbar/footer)
 import Register from "../pages/Register";
@@ -28,7 +31,10 @@ const Index = () => {
         <Route path="/collection" element={<Collection />} />
         <Route path="/collection/:gender" element={<GenderCollection />} />
         <Route path="/collection/:gender/:outfitType" element={<OutfitTypeCollection />} />
+        <Route path="/messages" element={<Messages />} />
         <Route path="/tailors" element={<TailorList />} />
+        <Route path="/consult" element={<Consult />} />
+        <Route path="/consult/:id" element={<ConsultDetail />} />
         <Route path="/tailor/:id" element={<TailorDetail />} />
         <Route path="/cart" element={<Cart />} />
         <Route path="/collection/event/:eventId" element={<EventCollection />} />
