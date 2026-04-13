@@ -1,9 +1,18 @@
 import { Outlet, NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import {
-    FiUser, FiShoppingBag, FiCalendar, FiStar, FiSettings,
-    FiBriefcase, FiScissors, FiPenTool, FiUsers, FiLogOut
+    FiUser,
+    FiShoppingBag,
+    FiCalendar,
+    FiStar,
+    FiSettings,
+    FiBriefcase,
+    FiScissors,
+    FiPenTool,
+    FiUsers,
+    FiLogOut,
 } from "react-icons/fi";
+import { LuRuler } from "react-icons/lu";
 
 const DashboardLayout = () => {
     const { user, logout } = useAuth();
@@ -19,6 +28,7 @@ const DashboardLayout = () => {
         const commonItems = [
             { path: "profile", label: "Profile", icon: <FiUser /> },
             { path: "orders", label: "Orders", icon: <FiShoppingBag /> },
+            { path: "measurements", label: "Measurements", icon: <LuRuler /> },
             { path: "consultations", label: "Consultations", icon: <FiCalendar /> },
             { path: "reviews", label: "Reviews", icon: <FiStar /> },
             { path: "settings", label: "Settings", icon: <FiSettings /> },
@@ -74,7 +84,7 @@ const DashboardLayout = () => {
                     {navItems.map((item) => (
                         <NavLink
                             key={item.path}
-                            to={item.path}
+                            to={`/dashboard/${item.path}`}
                             end={item.path === "profile"}
                             className={({ isActive }) =>
                                 `flex items-center gap-3 px-3 py-2 rounded-lg transition ${isActive

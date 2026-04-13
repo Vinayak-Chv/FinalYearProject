@@ -70,12 +70,13 @@ const Register = () => {
       const { data } = await axios.post(endpoint, cleanedData);
 
       if (data.success) {
-        // 👇 Store in localStorage and update AuthContext state
         setUserData(data.data);
         toast.success("Registration successful!");
-        navigate("/");
-      } else {
-        toast.error(data.message || "Registration failed");
+        if (role === "customer") {
+          navigate("/");
+        } else {
+          navigate("/dashboard");
+        }
       }
     } catch (err) {
       toast.error(err.response?.data?.message || "Server error");

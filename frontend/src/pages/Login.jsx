@@ -1,43 +1,25 @@
-import { useState, useEffect } from "react";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { useFormik } from "formik";
 import { useAuth } from "../context/AuthContext";
 import { loginSchema } from "../validations/authValidations";
 import { FiMail, FiLock } from "react-icons/fi";
-import axios from "axios";
 import toast from "react-hot-toast";
 
 const Login = () => {
   const navigate = useNavigate();
-  const location = useLocation();
   const { login, user } = useAuth();
   const [error, setError] = useState("");
-  const token = new URLSearchParams(location.search).get("token");
 
-  // After login, attach pending profile if token exists
-  useEffect(() => {
-    const attachProfile = async () => {
-      if (user && token) {
-        try {
-          await axios.post(
-            "http://localhost:3000/api/auth/attach-profile",
-            { token },
-            { headers: { Authorization: `Bearer ${localStorage.getItem("authToken")}` } }
-          );
-          toast.success("Welcome! Your profile is complete.");
-          navigate("/");
-        } catch (err) {
-          console.error("Failed to attach profile", err);
-          toast.error("Could not attach profile data. Please contact support.");
-          navigate("/");
-        }
-      } else if (user) {
-        toast.success(`Welcome back, ${user.name}!`);
-        navigate("/");
-      }
-    };
-    attachProfile();
-  }, [user, token, navigate]);
+  // Redirect after login
+  if (user) {
+    if (user.role === "customer") {
+      navigate("/");
+    } else {
+      navigate("/dashboard");
+    }
+    return null;
+  }
 
   const formik = useFormik({
     initialValues: { email: "", password: "" },
@@ -74,8 +56,8 @@ const Login = () => {
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
               className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:outline-none focus:border-primary ${formik.touched.email && formik.errors.email
-                  ? "border-red-300 bg-red-50"
-                  : "border-neutral-light"
+                ? "border-red-300 bg-red-50"
+                : "border-neutral-light"
                 }`}
             />
           </div>
@@ -95,8 +77,8 @@ const Login = () => {
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
               className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:outline-none focus:border-primary ${formik.touched.password && formik.errors.password
-                  ? "border-red-300 bg-red-50"
-                  : "border-neutral-light"
+                ? "border-red-300 bg-red-50"
+                : "border-neutral-light"
                 }`}
             />
           </div>

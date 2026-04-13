@@ -56,3 +56,63 @@ export const getProfessionalById = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
+
+export const getMyProfile = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id).select("-password").lean();
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    res.json({
+      success: true,
+      user,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+export const updateMyProfile = async (req, res) => {
+  try {
+    const { name, phone, avatar } = req.body;
+
+    const updatedUser = await User.findByIdAndUpdate(
+      req.user.id,
+      {
+        name,
+        phone,
+        avatar,
+      },
+      {
+        new: true,
+        runValidators: true,
+      },
+    ).select("-password");
+
+    if (!updatedUser) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    res.json({
+      success: true,
+      message: "Profile updated successfully",
+      user: updatedUser,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
