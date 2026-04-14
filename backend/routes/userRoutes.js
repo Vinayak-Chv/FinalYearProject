@@ -6,6 +6,8 @@ import {
   updateMyProfile,
   getMyMeasurements,
   saveMyMeasurements,
+  changeMyPassword,
+  deleteMyAccount,
 } from "../controllers/userControllers.js";
 import { protect } from "../middleware/auth.js";
 
@@ -19,5 +21,8 @@ router.put("/profile", protect, updateMyProfile);
 
 router.get("/measurements", protect, getMyMeasurements);
 router.put("/measurements", protect, saveMyMeasurements);
+
+router.put("/change-password", protect, changeMyPassword);
+router.delete("/me", protect, deleteMyAccount);
 
 export default router;
