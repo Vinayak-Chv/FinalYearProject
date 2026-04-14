@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { useAuth } from "../../context/AuthContext";
 import { FiPackage } from "react-icons/fi";
+import toast from "react-hot-toast";
 
 const Orders = () => {
     const { user } = useAuth();
@@ -18,6 +19,7 @@ const Orders = () => {
                 setOrders(data.orders);
             } catch (error) {
                 console.error("Failed to fetch orders", error);
+                toast.error(error.response?.data?.message || "Failed to fetch orders");
             } finally {
                 setLoading(false);
             }
@@ -36,7 +38,7 @@ const Orders = () => {
         }
     };
 
-    if (loading) return <div className="text-center py-8">Loading orders...</div>;
+    if (loading) return <div className="text-center py-8">Loading...</div>;
 
     return (
         <div className="space-y-6">

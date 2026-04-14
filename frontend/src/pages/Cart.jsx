@@ -1,10 +1,17 @@
 import { useCart } from "../context/CartContext";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useState } from "react";
+import axios from "axios";
+import toast from "react-hot-toast";
 import { FiTrash2, FiPlus, FiMinus } from "react-icons/fi";
 
 const Cart = () => {
-  const { cartItems, removeFromCart, updateQuantity, getCartTotal, loading } = useCart();
+  const { cartItems, removeFromCart, updateQuantity, getCartTotal, clearCart, loading } =
+    useCart();
+  const navigate = useNavigate();
+  const [placingOrder, setPlacingOrder] = useState(false);
   const total = getCartTotal();
+  const token = localStorage.getItem("authToken");
 
   if (loading) {
     return <div className="py-8 text-center">Loading cart...</div>;
@@ -25,6 +32,40 @@ const Cart = () => {
   const handleQuantityChange = (item, newQuantity) => {
     if (newQuantity < 1) return;
     updateQuantity(item.productId?._id || item.productId, newQuantity);
+  };
+
+  const handleProceedToPayment = async () => {
+    if (!token) {
+      toast.error("Please login to place an order");
+      navigate("/login");
+      return;
+    }
+
+    if (!cartItems || cartItems.length === 0) {
+      toast.error("Your cart is empty");
+      return;
+    }
+
+    setPlacingOrder(true);
+    try {
+      // Backend creates the order from the user's cart (and clears it server-side).
+      await axios.post(
+        "http://localhost:3000/api/orders",
+        { shippingAddress: {} },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      toast.success("Thank you! Your order has been placed successfully.");
+
+      // Refresh/clear cart in UI only after order succeeds.
+      await clearCart();
+
+      navigate("/dashboard/orders");
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Failed to place order");
+    } finally {
+      setPlacingOrder(false);
+    }
   };
 
   return (
@@ -93,8 +134,12 @@ const Cart = () => {
             <span>Total:</span>
             <span>₹{total}</span>
           </div>
-          <button className="w-full bg-primary text-white py-2 rounded mt-4 hover:bg-primary-dark">
-            Proceed to Checkout
+          <button
+            onClick={handleProceedToPayment}
+            disabled={placingOrder}
+            className="w-full bg-primary text-white py-2 rounded mt-4 hover:bg-primary-dark disabled:opacity-50"
+          >
+            {placingOrder ? "Placing Order..." : "Proceed to Payment"}
           </button>
         </div>
       </div>

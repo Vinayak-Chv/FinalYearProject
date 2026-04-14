@@ -41,6 +41,12 @@ export const registerCustomer = async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const hashpassword = await bcrypt.hash(password, salt);
 
+    const hasMeasurements =
+      measurements &&
+      Object.values(measurements).some(
+        (value) => value !== null && value !== undefined && value !== "",
+      );
+
     const user = await User.create({
       name,
       email,
@@ -50,16 +56,13 @@ export const registerCustomer = async (req, res) => {
       role: "customer",
       customerProfile: {
         address: address ? [address] : [],
-        measurements:
-          measurements && Object.keys(measurements).length > 0
-            ? [measurements]
-            : [],
+        measurements: hasMeasurements ? [{ ...measurements }] : [],
       },
     });
 
     const token = generateToken(user._id, user.role);
 
-    res.status(201).json({
+    return res.status(201).json({
       success: true,
       message: "Customer registered successfully",
       data: {
@@ -73,7 +76,7 @@ export const registerCustomer = async (req, res) => {
       },
     });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    return res.status(500).json({ success: false, message: error.message });
   }
 };
 
@@ -141,7 +144,7 @@ export const registerTailor = async (req, res) => {
 
     const token = generateToken(user._id, user.role);
 
-    res.status(201).json({
+    return res.status(201).json({
       success: true,
       message: "Tailor registered successfully. Pending admin approval.",
       data: {
@@ -155,7 +158,7 @@ export const registerTailor = async (req, res) => {
       },
     });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    return res.status(500).json({ success: false, message: error.message });
   }
 };
 
@@ -223,7 +226,7 @@ export const registerDesigner = async (req, res) => {
 
     const token = generateToken(user._id, user.role);
 
-    res.status(201).json({
+    return res.status(201).json({
       success: true,
       message: "Designer registered successfully. Pending admin approval.",
       data: {
@@ -237,7 +240,7 @@ export const registerDesigner = async (req, res) => {
       },
     });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    return res.status(500).json({ success: false, message: error.message });
   }
 };
 
@@ -270,7 +273,7 @@ export const loginUser = async (req, res) => {
 
     const token = generateToken(user._id, user.role);
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       message: "Login successful",
       data: {
@@ -284,6 +287,99 @@ export const loginUser = async (req, res) => {
       },
     });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// Get logged-in user's latest measurements
+export const getMyMeasurements = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id).select(
+      "customerProfile role",
+    );
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    if (user.role !== "customer") {
+      return res.status(403).json({
+        success: false,
+        message: "Only customers can access measurements",
+      });
+    }
+
+    const measurements = user.customerProfile?.measurements || [];
+    const latestMeasurement =
+      measurements.length > 0 ? measurements[measurements.length - 1] : null;
+
+    return res.status(200).json({
+      success: true,
+      measurements: latestMeasurement,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+// Save/update logged-in user's measurements
+export const saveMyMeasurements = async (req, res) => {
+  try {
+    const { chest, waist, hips, shoulder, sleeve, length } = req.body;
+
+    const user = await User.findById(req.user.id);
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    if (user.role !== "customer") {
+      return res.status(403).json({
+        success: false,
+        message: "Only customers can save measurements",
+      });
+    }
+
+    if (!user.customerProfile) {
+      user.customerProfile = {
+        address: [],
+        measurements: [],
+      };
+    }
+
+    // store only latest measurement set
+    user.customerProfile.measurements = [
+      {
+        chest: chest ?? null,
+        waist: waist ?? null,
+        hips: hips ?? null,
+        shoulder: shoulder ?? null,
+        sleeve: sleeve ?? null,
+        length: length ?? null,
+        createdAt: new Date(),
+      },
+    ];
+
+    await user.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Measurements saved successfully",
+      measurements: user.customerProfile.measurements[0],
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
   }
 };

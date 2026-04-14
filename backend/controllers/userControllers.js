@@ -116,3 +116,70 @@ export const updateMyProfile = async (req, res) => {
     });
   }
 };
+
+export const getMyMeasurements = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id)
+      .select("customerProfile.measurements")
+      .lean();
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    const list = user?.customerProfile?.measurements || [];
+    const measurements = Array.isArray(list) && list.length > 0 ? list[list.length - 1] : null;
+
+    res.json({
+      success: true,
+      measurements: measurements || null,
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export const saveMyMeasurements = async (req, res) => {
+  try {
+    const { chest, waist, hips, shoulder, sleeve, length } = req.body || {};
+
+    const user = await User.findById(req.user.id);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    if (!user.customerProfile) user.customerProfile = {};
+    if (!Array.isArray(user.customerProfile.measurements)) {
+      user.customerProfile.measurements = [];
+    }
+
+    const parsed = {
+      chest: chest === "" || chest === null || chest === undefined ? undefined : Number(chest),
+      waist: waist === "" || waist === null || waist === undefined ? undefined : Number(waist),
+      hips: hips === "" || hips === null || hips === undefined ? undefined : Number(hips),
+      shoulder:
+        shoulder === "" || shoulder === null || shoulder === undefined ? undefined : Number(shoulder),
+      sleeve: sleeve === "" || sleeve === null || sleeve === undefined ? undefined : Number(sleeve),
+      length: length === "" || length === null || length === undefined ? undefined : Number(length),
+    };
+
+    user.customerProfile.measurements.push(parsed);
+    await user.save();
+
+    const saved = user.customerProfile.measurements[user.customerProfile.measurements.length - 1];
+
+    res.json({
+      success: true,
+      message: "Measurements saved",
+      measurements: saved,
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
