@@ -7,7 +7,7 @@ import { useAuth } from "../../context/AuthContext";
 const Settings = () => {
   const token = localStorage.getItem("authToken");
   const navigate = useNavigate();
-  const { logout } = useAuth();
+  const { logout, user } = useAuth();
 
   const [changing, setChanging] = useState(false);
   const [deleting, setDeleting] = useState(false);
@@ -134,19 +134,21 @@ const Settings = () => {
         </form>
       </div>
 
-      <div className="bg-white rounded-lg shadow-md p-6 border border-red-200">
-        <h2 className="text-xl font-semibold mb-2 text-red-700">Delete Account</h2>
-        <p className="text-gray-600 mb-4">
-          This action is irreversible. Your account will be permanently deleted.
-        </p>
-        <button
-          onClick={handleDeleteAccount}
-          disabled={deleting}
-          className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 disabled:opacity-50"
-        >
-          {deleting ? "Deleting..." : "Delete Account"}
-        </button>
-      </div>
+      {user?.role !== "tailor" && (
+        <div className="bg-white rounded-lg shadow-md p-6 border border-red-200">
+          <h2 className="text-xl font-semibold mb-2 text-red-700">Delete Account</h2>
+          <p className="text-gray-600 mb-4">
+            This action is irreversible. Your account will be permanently deleted.
+          </p>
+          <button
+            onClick={handleDeleteAccount}
+            disabled={deleting}
+            className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 disabled:opacity-50"
+          >
+            {deleting ? "Deleting..." : "Delete Account"}
+          </button>
+        </div>
+      )}
     </div>
   );
 };

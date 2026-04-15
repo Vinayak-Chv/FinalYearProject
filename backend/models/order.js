@@ -11,6 +11,8 @@ const orderItemSchema = new mongoose.Schema({
   price: Number,
   quantity: Number,
   discountPercentage: Number,
+  /** Copied from Product at checkout — used to attribute orders to tailors */
+  vendorName: { type: String, trim: true },
 });
 
 const orderSchema = new mongoose.Schema(

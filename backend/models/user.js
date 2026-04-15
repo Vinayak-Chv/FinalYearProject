@@ -65,6 +65,14 @@ const userSchema = mongoose.Schema({
   // Tailor-specific
   tailorProfile: {
     businessName: String,
+    specialization: [String],
+    serviceAreas: [String],
+    services: [
+      {
+        name: { type: String, trim: true },
+        price: { type: Number, min: 0 },
+      },
+    ],
     workType: [String],
     garmentType: [String],
     targetSegment: [String],
@@ -105,7 +113,7 @@ const userSchema = mongoose.Schema({
       {
         type: {
           type: String,
-          enum: ["image", "video", "lookbook", "collection"],
+          enum: ["image", "video", "lookbook", "collection", "link"],
         },
         url: String,
         title: String,

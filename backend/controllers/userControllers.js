@@ -17,8 +17,8 @@ export const getProfessionals = async (req, res) => {
       role: prof.role,
       specialization:
         prof.role === "tailor"
-          ? prof.tailorProfile?.specialization
-          : prof.designerProfile?.specialization,
+          ? prof.tailorProfile?.specialization || []
+          : prof.designerProfile?.specialization || [],
     }));
 
     res.json({ success: true, professionals: formatted });
@@ -84,27 +84,66 @@ export const getMyProfile = async (req, res) => {
 
 export const updateMyProfile = async (req, res) => {
   try {
-    const { name, phone, avatar } = req.body;
+    const { name, phone, avatar, tailorProfile, designerProfile } = req.body;
 
-    const updatedUser = await User.findByIdAndUpdate(
-      req.user.id,
-      {
-        name,
-        phone,
-        avatar,
-      },
-      {
-        new: true,
-        runValidators: true,
-      },
-    ).select("-password");
-
-    if (!updatedUser) {
+    const user = await User.findById(req.user.id);
+    if (!user) {
       return res.status(404).json({
         success: false,
         message: "User not found",
       });
     }
+
+    if (name !== undefined) user.name = name;
+    if (phone !== undefined) user.phone = phone;
+    if (avatar !== undefined) user.avatar = avatar;
+
+    if (user.role === "tailor" && tailorProfile && typeof tailorProfile === "object") {
+      if (!user.tailorProfile) user.tailorProfile = {};
+      const tp = user.tailorProfile;
+      const inc = tailorProfile;
+      const assignIf = (key) => {
+        if (inc[key] !== undefined) tp[key] = inc[key];
+      };
+      assignIf("businessName");
+      assignIf("specialization");
+      assignIf("serviceAreas");
+      assignIf("services");
+      assignIf("portfolio");
+      assignIf("bio");
+      assignIf("experience");
+      assignIf("workType");
+      assignIf("garmentType");
+      assignIf("targetSegment");
+      assignIf("address");
+      if (inc.socialLinks !== undefined) {
+        tp.socialLinks = { ...tp.socialLinks, ...inc.socialLinks };
+      }
+    }
+
+    if (user.role === "designer" && designerProfile && typeof designerProfile === "object") {
+      if (!user.designerProfile) user.designerProfile = {};
+      const dp = user.designerProfile;
+      const inc = designerProfile;
+      const assignIf = (key) => {
+        if (inc[key] !== undefined) dp[key] = inc[key];
+      };
+      assignIf("brandName");
+      assignIf("specialization");
+      assignIf("targetSegment");
+      assignIf("portfolio");
+      assignIf("bio");
+      assignIf("education");
+      assignIf("awards");
+      assignIf("address");
+      if (inc.socialLinks !== undefined) {
+        dp.socialLinks = { ...dp.socialLinks, ...inc.socialLinks };
+      }
+    }
+
+    await user.save();
+
+    const updatedUser = await User.findById(req.user.id).select("-password");
 
     res.json({
       success: true,

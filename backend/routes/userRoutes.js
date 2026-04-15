@@ -9,11 +9,13 @@ import {
   changeMyPassword,
   deleteMyAccount,
 } from "../controllers/userControllers.js";
+import { getProfessionalReviews } from "../controllers/reviewControllers.js";
 import { protect } from "../middleware/auth.js";
 
 const router = express.Router();
 
 router.get("/professionals", protect, getProfessionals);
+router.get("/professional/:id/reviews", protect, getProfessionalReviews);
 router.get("/professional/:id", protect, getProfessionalById);
 
 router.get("/profile", protect, getMyProfile);

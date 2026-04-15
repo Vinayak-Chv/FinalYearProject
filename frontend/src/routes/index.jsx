@@ -27,6 +27,9 @@ import Profile from "../pages/dashboard/Profile";
 import Orders from "../pages/dashboard/Orders";
 import Measurements from "../pages/dashboard/Measurements";
 import Settings from "../pages/dashboard/Settings";
+import Consultations from "../pages/dashboard/Consultations";
+import Portfolio from "../pages/dashboard/Portfolio";
+import Reviews from "../pages/dashboard/Reviews";
 
 // Auth Pages (without navbar/footer)
 import Register from "../pages/Register";
@@ -60,6 +63,9 @@ const Index = () => {
           <Route path="/dashboard/profile" element={<Profile />} />
           <Route path="/dashboard/orders" element={<Orders />} />
           <Route path="/dashboard/measurements" element={<Measurements />} />
+          <Route path="/dashboard/consultations" element={<Consultations />} />
+          <Route path="/dashboard/portfolio" element={<Portfolio />} />
+          <Route path="/dashboard/reviews" element={<Reviews />} />
           <Route path="/dashboard/settings" element={<Settings />} />
         </Route>
       </Route>
