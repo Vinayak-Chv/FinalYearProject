@@ -8,17 +8,17 @@ export const createConsultation = async (req, res) => {
     const { professionalId, scheduledAt, notes } = req.body;
     const customerId = req.user.id;
 
-    // Check if a pending consultation already exists between these two
+    // Block creating a new request only if there is an active consultation
     const existing = await Consultation.findOne({
       customerId,
       professionalId,
-      status: "pending",
+      status: { $in: ["pending", "accepted", "scheduled", "ongoing"] },
     });
     if (existing) {
       return res.status(400).json({
         success: false,
         message:
-          "You already have a pending consultation request with this professional.",
+          "You already have an active consultation with this professional.",
       });
     }
 

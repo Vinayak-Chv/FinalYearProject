@@ -61,16 +61,20 @@ export const addToCart = async (req, res) => {
       originalPrice,
       price,
       discountPercentage,
+      priceType,
       quantity,
     } = req.body;
 
     const normalizedProductId = normalizeProductId(productId);
+    const normalizedPriceType = priceType === "event" ? "event" : "normal";
 
     let cart = await Cart.findOne({ userId });
     if (!cart) cart = new Cart({ userId, items: [] });
 
     const existingIndex = cart.items.findIndex(
-      (item) => item.productId.toString() === normalizedProductId,
+      (item) =>
+        item.productId.toString() === normalizedProductId &&
+        (item.priceType || "normal") === normalizedPriceType,
     );
 
     if (existingIndex > -1) {
@@ -83,6 +87,7 @@ export const addToCart = async (req, res) => {
         originalPrice,
         price,
         discountPercentage,
+        priceType: normalizedPriceType,
         quantity,
       });
     }
@@ -110,8 +115,9 @@ export const updateCartItem = async (req, res) => {
       });
     }
 
-    const { productId, quantity } = req.body;
+    const { productId, quantity, priceType } = req.body;
     const normalizedProductId = normalizeProductId(productId);
+    const normalizedPriceType = priceType === "event" ? "event" : "normal";
 
     if (!normalizedProductId) {
       return res.status(400).json({
@@ -137,7 +143,9 @@ export const updateCartItem = async (req, res) => {
     }
 
     const item = cart.items.find(
-      (i) => i.productId.toString() === normalizedProductId,
+      (i) =>
+        i.productId.toString() === normalizedProductId &&
+        (i.priceType || "normal") === normalizedPriceType,
     );
 
     if (!item) {
@@ -171,8 +179,9 @@ export const removeCartItem = async (req, res) => {
       });
     }
 
-    const { productId } = req.body;
+    const { productId, priceType } = req.body;
     const normalizedProductId = normalizeProductId(productId);
+    const normalizedPriceType = priceType === "event" ? "event" : "normal";
 
     if (!normalizedProductId) {
       return res.status(400).json({
@@ -190,9 +199,10 @@ export const removeCartItem = async (req, res) => {
       });
     }
 
-    cart.items = cart.items.filter(
-      (i) => i.productId.toString() !== normalizedProductId,
-    );
+    cart.items = cart.items.filter((i) => {
+      if (i.productId.toString() !== normalizedProductId) return true;
+      return (i.priceType || "normal") !== normalizedPriceType;
+    });
 
     await cart.save();
 

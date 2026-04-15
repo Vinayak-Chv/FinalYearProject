@@ -11,6 +11,11 @@ const cartItemSchema = new mongoose.Schema({
   originalPrice: Number,
   price: Number, // actual price paid (may include discount)
   discountPercentage: Number,
+  priceType: {
+    type: String,
+    enum: ["normal", "event"],
+    default: "normal",
+  },
   quantity: {
     type: Number,
     default: 1,

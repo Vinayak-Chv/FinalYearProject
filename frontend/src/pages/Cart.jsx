@@ -31,7 +31,11 @@ const Cart = () => {
 
   const handleQuantityChange = (item, newQuantity) => {
     if (newQuantity < 1) return;
-    updateQuantity(item.productId?._id || item.productId, newQuantity);
+    updateQuantity(
+      item.productId?._id || item.productId,
+      newQuantity,
+      item.priceType || "normal"
+    );
   };
 
   const handleProceedToPayment = async () => {
@@ -116,7 +120,12 @@ const Cart = () => {
                 <td className="px-4 py-2">₹{item.price * item.quantity}</td>
                 <td className="px-4 py-2">
                   <button
-                    onClick={() => removeFromCart(item.productId?._id || item.productId)}
+                    onClick={() =>
+                      removeFromCart(
+                        item.productId?._id || item.productId,
+                        item.priceType || "normal"
+                      )
+                    }
                     className="text-red-500 hover:text-red-700"
                   >
                     <FiTrash2 />

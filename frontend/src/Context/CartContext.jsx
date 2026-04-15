@@ -38,7 +38,7 @@ export const CartProvider = ({ children }) => {
         fetchCart();
     }, [user]);
 
-    const addToCart = async (product, price, discountPercentage = 0) => {
+    const addToCart = async (product, price, discountPercentage = 0, priceType = "normal") => {
         const token = localStorage.getItem("authToken");
         if (!token) return;
 
@@ -52,6 +52,7 @@ export const CartProvider = ({ children }) => {
                     originalPrice: product.price,
                     price,
                     discountPercentage,
+                    priceType,
                     quantity: 1,
                 },
                 {
@@ -68,14 +69,14 @@ export const CartProvider = ({ children }) => {
         }
     };
 
-    const updateQuantity = async (productId, quantity) => {
+    const updateQuantity = async (productId, quantity, priceType = "normal") => {
         const token = localStorage.getItem("authToken");
         if (!token) return;
 
         try {
             await axios.put(
                 "http://localhost:3000/api/cart/update",
-                { productId, quantity },
+                { productId, quantity, priceType },
                 {
                     headers: {
                         Authorization: `Bearer ${token}`,
@@ -90,14 +91,14 @@ export const CartProvider = ({ children }) => {
         }
     };
 
-    const removeFromCart = async (productId) => {
+    const removeFromCart = async (productId, priceType = "normal") => {
         const token = localStorage.getItem("authToken");
         if (!token) return;
 
         try {
             await axios.delete("http://localhost:3000/api/cart/remove", {
                 headers: { Authorization: `Bearer ${token}` },
-                data: { productId },
+                data: { productId, priceType },
             });
 
             await fetchCart();

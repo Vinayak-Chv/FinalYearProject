@@ -9,6 +9,7 @@ const ProductCard = ({ product, discount = 0 }) => {
     const originalPrice = product.price;
     const discountedPrice = discount > 0 ? originalPrice * (1 - discount / 100) : originalPrice;
     const finalPrice = discount > 0 ? Math.round(discountedPrice) : originalPrice;
+    const priceType = discount > 0 ? "event" : "normal";
 
     const handleAddToCart = (e) => {
         e.preventDefault(); // prevent navigation to product detail
@@ -16,12 +17,21 @@ const ProductCard = ({ product, discount = 0 }) => {
             toast.error('Please login to add items to cart');
             return;
         }
-        addToCart(product, finalPrice, discount);
+        addToCart(product, finalPrice, discount, priceType);
         toast.success('Added to cart');
     };
 
     return (
-        <Link to={`/collection/product/${product._id}`} className="block">
+        <Link
+            to={`/collection/product/${product._id}${discount > 0 ? `?discount=${discount}` : ""}`}
+            state={{
+                priceType,
+                discountPercentage: discount,
+                selectedPrice: finalPrice,
+                originalPrice,
+            }}
+            className="block"
+        >
             <div className='bg-white rounded-lg shadow-md overflow-hidden cursor-pointer'>
                 <img src={product.images[0]} alt={product.title} className='w-full h-88 object-cover' />
                 <div className='p-4'>
